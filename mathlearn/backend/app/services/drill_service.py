@@ -1,0 +1,270 @@
+"""Сервис для Drill-режима (тренировка таблицы умножения)."""
+
+import random
+from datetime import datetime
+from dataclasses import dataclass, field
+from typing import Optional
+
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
+
+from app.models.drill_session import DrillSession
+from app.models.sr_card import SRCard
+
+
+@dataclass
+class Question:
+    """Вопрос для drill-сессии."""
+    question_id: int
+    factor_a: int
+    factor_b: int
+    correct_answer: int
+
+
+@dataclass
+class DrillSessionState:
+    """Состояние активной drill-сессии."""
+    session_id: int
+    questions: list[Question] = field(default_factory=list)
+    current_index: int = 0
+    correct_count: int = 0
+    total_answered: int = 0
+    response_times_ms: list[int] = field(default_factory=list)
+    started_at: datetime = field(default_factory=datetime.now)
+    ended_at: Optional[datetime] = None
+
+
+# Хранилище активных сессий в памяти (для простоты)
+# В продакшене лучше использовать Redis
+_active_sessions: dict[int, DrillSessionState] = {}
+
+
+async def start_session(
+    db: AsyncSession,
+    user_id: int,
+    tables: list[int],
+    limit: int,
+    time_limit_sec: Optional[int] = None,
+) -> tuple[DrillSession, Question]:
+    """
+    Начать новую drill-сессию.
+
+    Args:
+        db: Сессия базы данных.
+        user_id: ID пользователя.
+        tables: Список таблиц умножения для тренировки (например, [2, 3, 4]).
+        limit: Количество вопросов в сессии.
+        time_limit_sec: Ограничение по времени в секундах (опционально).
+
+    Returns:
+        Кортеж (DrillSession, первый вопрос).
+    """
+    # Генерация пула вопросов из выбранных таблиц
+    question_pool = []
+    for a in tables:
+        for b in range(1, 11):
+            question_pool.append(Question(
+                question_id=len(question_pool),
+                factor_a=a,
+                factor_b=b,
+                correct_answer=a * b,
+            ))
+
+    # Случайный выбор limit вопросов из пула
+    if len(question_pool) > limit:
+        selected_questions = random.sample(question_pool, limit)
+    else:
+        selected_questions = question_pool
+
+    # Перемешиваем вопросы
+    random.shuffle(selected_questions)
+
+    # Создание записи сессии в БД
+    session = DrillSession(
+        user_id=user_id,
+        total_questions=limit,
+        correct_answers=0,
+        avg_response_ms=0,
+    )
+    db.add(session)
+    await db.commit()
+    await db.refresh(session)
+
+    # Сохранение состояния сессии в памяти
+    state = DrillSessionState(
+        session_id=session.id,
+        questions=selected_questions,
+        current_index=0,
+        correct_count=0,
+        total_answered=0,
+        response_times_ms=[],
+        started_at=session.started_at,
+    )
+    _active_sessions[session.id] = state
+
+    # Возврат первого вопроса
+    first_question = selected_questions[0] if selected_questions else None
+
+    return session, first_question
+
+
+async def submit_answer(
+    db: AsyncSession,
+    session_id: int,
+    answer: int,
+    response_time_ms: int = 0,
+) -> tuple[bool, int, Optional[Question], int]:
+    """
+    Отправить ответ на вопрос в drill-сессии.
+
+    Args:
+        db: Сессия базы данных.
+        session_id: ID сессии.
+        answer: Ответ пользователя.
+        response_time_ms: Время ответа в миллисекундах.
+
+    Returns:
+        Кортеж (correct, correct_answer, next_question, score):
+            - correct: True если ответ верный.
+            - correct_answer: Правильный ответ.
+            - next_question: Следующий вопрос или None если сессия завершена.
+            - score: Текущий счёт (количество правильных ответов).
+    """
+    # Получение состояния сессии
+    state = _active_sessions.get(session_id)
+    if state is None:
+        # Сессия не найдена или уже завершена
+        # Пробуем загрузить из БД
+        result = await db.execute(
+            select(DrillSession).where(DrillSession.id == session_id)
+        )
+        session = result.scalar_one_or_none()
+        if session and session.ended_at is not None:
+            raise ValueError(f"Сессия {session_id} уже завершена")
+        raise ValueError(f"Сессия {session_id} не найдена")
+
+    # Проверка, есть ли ещё вопросы
+    if state.current_index >= len(state.questions):
+        # Сессия завершена
+        raise ValueError("Все вопросы в сессии отвечены")
+
+    # Получение текущего вопроса
+    current_question = state.questions[state.current_index]
+
+    # Проверка ответа
+    correct = answer == current_question.correct_answer
+
+    # Обновление статистики
+    state.total_answered += 1
+    state.response_times_ms.append(response_time_ms)
+    if correct:
+        state.correct_count += 1
+
+    # Переход к следующему вопросу
+    state.current_index += 1
+
+    # Определение следующего вопроса
+    next_question = None
+    if state.current_index < len(state.questions):
+        next_question = state.questions[state.current_index]
+    else:
+        # Сессия завершена
+        state.ended_at = datetime.now()
+        await _finalize_session(db, state)
+
+    return correct, current_question.correct_answer, next_question, state.correct_count
+
+
+async def _finalize_session(db: AsyncSession, state: DrillSessionState) -> None:
+    """
+    Завершить сессию и обновить запись в БД.
+
+    Args:
+        db: Сессия базы данных.
+        state: Состояние сессии.
+    """
+    # Обновление записи сессии в БД
+    result = await db.execute(
+        select(DrillSession).where(DrillSession.id == state.session_id)
+    )
+    session = result.scalar_one_or_none()
+
+    if session:
+        session.ended_at = state.ended_at
+        session.total_questions = state.total_answered
+        session.correct_answers = state.correct_count
+
+        # Вычисление среднего времени ответа
+        if state.response_times_ms:
+            session.avg_response_ms = round(sum(state.response_times_ms) / len(state.response_times_ms))
+
+        await db.commit()
+
+    # Удаление состояния из памяти
+    _active_sessions.pop(state.session_id, None)
+
+
+async def get_results(session_id: int, db: AsyncSession) -> dict:
+    """
+    Получить результаты завершённой сессии.
+
+    Args:
+        session_id: ID сессии.
+        db: Сессия базы данных.
+
+    Returns:
+        Словарь с результатами сессии.
+    """
+    # Загрузка сессии из БД
+    result = await db.execute(
+        select(DrillSession).where(DrillSession.id == session_id)
+    )
+    session = result.scalar_one_or_none()
+
+    if not session:
+        raise ValueError(f"Сессия {session_id} не найдена")
+
+    if session.ended_at is None:
+        # Сессия ещё активна, получаем данные из памяти
+        state = _active_sessions.get(session_id)
+        if state:
+            accuracy = (state.correct_count / state.total_answered * 100) if state.total_answered > 0 else 0.0
+            return {
+                "session_id": session.id,
+                "total_questions": state.total_answered,
+                "correct_answers": state.correct_count,
+                "accuracy": accuracy,
+                "avg_response_ms": round(sum(state.response_times_ms) / len(state.response_times_ms)) if state.response_times_ms else 0,
+                "started_at": session.started_at,
+                "ended_at": None,
+            }
+
+    # Вычисление точности
+    accuracy = (session.correct_answers / session.total_questions * 100) if session.total_questions > 0 else 0.0
+
+    return {
+        "session_id": session.id,
+        "total_questions": session.total_questions,
+        "correct_answers": session.correct_answers,
+        "accuracy": accuracy,
+        "avg_response_ms": session.avg_response_ms,
+        "started_at": session.started_at,
+        "ended_at": session.ended_at,
+    }
+
+
+def get_current_question(session_id: int) -> Optional[Question]:
+    """
+    Получить текущий вопрос активной сессии.
+
+    Args:
+        session_id: ID сессии.
+
+    Returns:
+        Текущий вопрос или None.
+    """
+    state = _active_sessions.get(session_id)
+    if state is None or state.current_index >= len(state.questions):
+        return None
+    return state.questions[state.current_index]
