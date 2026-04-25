@@ -135,13 +135,6 @@ async def submit_answer(
     state = _active_sessions.get(session_id)
     if state is None:
         # Сессия не найдена или уже завершена
-        # Пробуем загрузить из БД
-        result = await db.execute(
-            select(DrillSession).where(DrillSession.id == session_id)
-        )
-        session = result.scalar_one_or_none()
-        if session and session.ended_at is not None:
-            raise ValueError(f"Сессия {session_id} уже завершена")
         raise ValueError(f"Сессия {session_id} не найдена")
 
     # Проверка, есть ли ещё вопросы
@@ -190,7 +183,7 @@ async def _finalize_session(db: AsyncSession, state: DrillSessionState) -> None:
     )
     session = result.scalar_one_or_none()
 
-    if session:
+    if session is not None:
         session.ended_at = state.ended_at
         session.total_questions = state.total_answered
         session.correct_answers = state.correct_count
