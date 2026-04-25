@@ -3,8 +3,6 @@
 from datetime import datetime, timedelta
 from typing import Protocol
 
-from app.models.sr_card import SRCard
-
 
 class SRCardLike(Protocol):
     """Протокол для объекта карточки с необходимыми атрибутами."""
