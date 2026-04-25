@@ -138,7 +138,7 @@ const HomePage = () => {
           </div>
           <div className="progress-percent">{progressPercent}%</div>
           <p className="progress-description">
-            Таблицы умножения изучено ({progressPercent}% карточек с mastery > 2.0)
+            Таблицы умножения изучено ({progressPercent}% карточек с mastery &gt; 2.0)
           </p>
           <Link to="/table" className="view-table-link">
             Показать таблицу →
