@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from app.core.config import settings
-from app.routers import auth_router
+from app.routers import auth_router, sr_router
 
 
 app = FastAPI(
@@ -12,6 +12,7 @@ app = FastAPI(
 
 # Подключение роутов
 app.include_router(auth_router)
+app.include_router(sr_router, prefix="/api")
 
 
 @app.get("/health")
