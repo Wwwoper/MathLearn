@@ -1,6 +1,28 @@
 ```
+# Test and coverage reports
+.coverage
+htmlcov/
+coverage/
+
+# Pytest cache
+.pytest_cache/
+
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.nox/
+$py.class
+*.so
+*.egg-info/
+.eggs/
 ```

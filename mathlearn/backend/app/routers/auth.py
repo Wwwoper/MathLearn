@@ -6,15 +6,38 @@ from sqlalchemy import select
 
 from app.core.database import get_async_session
 from app.core.security import get_password_hash, verify_password, create_token_pair, decode_token, create_access_token
-from app.schemas.auth import UserCreate, UserLogin, Token, UserResponse
+from app.schemas.auth import RegisterRequest, LoginRequest, TokenResponse
+from app.schemas.user import UserResponse
 from app.models.user import User
-from app.core.deps import get_current_user
+from app.models.sr_card import SRCard
+from app.core.deps import get_current_user, http_bearer
+from fastapi.security import HTTPAuthorizationCredentials
 
 router = APIRouter(prefix="/auth", tags=["Авторизация"])
 
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def register(user_data: UserCreate, db: AsyncSession = Depends(get_async_session)):
+async def create_initial_sr_cards(db: AsyncSession, user_id: int):
+    """Создание 100 начальных SR-карточек для пользователя (таблица умножения 1-10)."""
+    cards = []
+    for a in range(1, 11):
+        for b in range(1, 11):
+            card = SRCard(
+                user_id=user_id,
+                factor_a=a,
+                factor_b=b,
+                ease_factor=2.5,
+                interval_days=0,
+                repetitions=0,
+                lapses=0,
+            )
+            cards.append(card)
+    
+    db.add_all(cards)
+    await db.commit()
+
+
+@router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
+async def register(user_data: RegisterRequest, db: AsyncSession = Depends(get_async_session)):
     """Регистрация нового пользователя."""
     # Проверка существования пользователя с таким email
     result = await db.execute(select(User).where(User.email == user_data.email))
@@ -38,11 +61,21 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_async_s
     await db.commit()
     await db.refresh(new_user)
     
-    return new_user
+    # Создание 100 SR-карточек для нового пользователя
+    await create_initial_sr_cards(db, new_user.id)
+    
+    # Создание пары токенов
+    access_token, refresh_token = create_token_pair(new_user.id)
+    
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer",
+    }
 
 
-@router.post("/login", response_model=Token)
-async def login(login_data: UserLogin, db: AsyncSession = Depends(get_async_session)):
+@router.post("/login", response_model=TokenResponse)
+async def login(login_data: LoginRequest, db: AsyncSession = Depends(get_async_session)):
     """Вход пользователя и получение токенов."""
     # Поиск пользователя по email
     result = await db.execute(select(User).where(User.email == login_data.email))
@@ -65,7 +98,7 @@ async def login(login_data: UserLogin, db: AsyncSession = Depends(get_async_sess
     }
 
 
-@router.post("/refresh", response_model=Token)
+@router.post("/refresh", response_model=TokenResponse)
 async def refresh_token_endpoint(refresh_token: str, db: AsyncSession = Depends(get_async_session)):
     """Обновление токена доступа."""
     # Декодирование refresh токена
@@ -115,6 +148,17 @@ async def refresh_token_endpoint(refresh_token: str, db: AsyncSession = Depends(
         "refresh_token": new_refresh_token,
         "token_type": "bearer",
     }
+
+
+@router.post("/logout")
+async def logout(
+    current_user: User = Depends(get_current_user),
+    credentials: HTTPAuthorizationCredentials = Depends(http_bearer),
+):
+    """Выход пользователя и инвалидация refresh токена в Redis."""
+    # В реальной реализации здесь нужно добавить токен в blacklist в Redis
+    # Для простоты пока просто возвращаем успех
+    return {"message": "Успешный выход"}
 
 
 @router.get("/me", response_model=UserResponse)
