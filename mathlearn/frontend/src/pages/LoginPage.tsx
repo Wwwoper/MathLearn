@@ -32,14 +32,25 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
+      console.log('Sending login request...');
       const response = await apiClient.post('/auth/login', formData);
+      console.log('Login response:', response.data);
       const { user, access_token } = response.data;
       
+      if (!user) {
+        console.error('No user in response');
+        setError('Ошибка: данные пользователя не получены');
+        return;
+      }
+      
+      console.log('Setting user and token...');
       setUser(user);
       setToken(access_token);
+      console.log('User and token set, navigating to home...');
       
       navigate('/');
     } catch (err: unknown) {
+      console.error('Login error:', err);
       if (axios.isAxiosError(err)) {
         setError(err.response?.data?.detail || 'Ошибка входа');
       } else {
