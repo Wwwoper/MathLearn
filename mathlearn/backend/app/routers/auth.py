@@ -18,6 +18,8 @@ router = APIRouter(prefix="/auth", tags=["Авторизация"])
 
 async def create_initial_sr_cards(db: AsyncSession, user_id: int):
     """Создание 100 начальных SR-карточек для пользователя (таблица умножения 1-10)."""
+    from datetime import datetime
+    
     cards = []
     for a in range(1, 11):
         for b in range(1, 11):
@@ -27,6 +29,7 @@ async def create_initial_sr_cards(db: AsyncSession, user_id: int):
                 factor_b=b,
                 ease_factor=2.5,
                 interval_days=0,
+                next_review_at=datetime.now(),  # Карточки доступны сразу
                 repetitions=0,
                 lapses=0,
             )
