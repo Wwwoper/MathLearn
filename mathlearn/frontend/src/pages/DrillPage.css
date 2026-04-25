@@ -1,0 +1,62 @@
+.drill-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.drill-page__header {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: white;
+}
+
+.drill-page__title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.drill-page__subtitle {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.drill-page__main {
+  width: 100%;
+  max-width: 600px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .drill-page {
+    padding: 1rem;
+  }
+
+  .drill-page__title {
+    font-size: 2rem;
+  }
+
+  .drill-page__subtitle {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .drill-page__title {
+    font-size: 1.75rem;
+  }
+
+  .drill-page__main {
+    border-radius: 12px;
+  }
+}
