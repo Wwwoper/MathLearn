@@ -13,7 +13,7 @@ app = FastAPI(
 )
 
 # Подключение роутов
-app.include_router(auth_router)
+app.include_router(auth_router, prefix="/api")
 app.include_router(sr_router, prefix="/api")
 app.include_router(drill_router, prefix="/api")
 app.include_router(stats_router, prefix="/api")
