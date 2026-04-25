@@ -71,6 +71,7 @@ async def register(user_data: RegisterRequest, db: AsyncSession = Depends(get_as
         "access_token": access_token,
         "refresh_token": refresh_token,
         "token_type": "bearer",
+        "user": new_user,
     }
 
 
@@ -95,6 +96,7 @@ async def login(login_data: LoginRequest, db: AsyncSession = Depends(get_async_s
         "access_token": access_token,
         "refresh_token": refresh_token,
         "token_type": "bearer",
+        "user": user,
     }
 
 
@@ -147,6 +149,7 @@ async def refresh_token_endpoint(refresh_token: str, db: AsyncSession = Depends(
         "access_token": new_access_token,
         "refresh_token": new_refresh_token,
         "token_type": "bearer",
+        "user": user,
     }
 
 
