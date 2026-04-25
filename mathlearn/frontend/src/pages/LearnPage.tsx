@@ -1,8 +1,69 @@
+import React, { useState } from 'react';
+import { FlashCard } from '../components/FlashCard';
+import SRRatingButtons from '../components/SRRatingButtons';
+import './LearnPage.css';
+
+interface CardData {
+  factorA: number;
+  factorB: number;
+  answer: number;
+  id: number;
+}
+
 const LearnPage = () => {
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [showRating, setShowRating] = useState(false);
+
+  // Demo data - в реальном приложении будет загружаться из бэкенда
+  const cards: CardData[] = [
+    { id: 1, factorA: 2, factorB: 3, answer: 6 },
+    { id: 2, factorA: 4, factorB: 5, answer: 20 },
+    { id: 3, factorA: 6, factorB: 7, answer: 42 },
+    { id: 4, factorA: 8, factorB: 9, answer: 72 },
+    { id: 5, factorA: 3, factorB: 7, answer: 21 },
+  ];
+
+  const handleRate = (rating: number) => {
+    console.log(`Rated ${rating}`);
+    // Здесь будет логика интервального повторения
+    if (currentCardIndex < cards.length - 1) {
+      setCurrentCardIndex(currentCardIndex + 1);
+      setShowRating(false);
+    } else {
+      alert('Все карточки пройдены!');
+    }
+  };
+
+  const handleCardFlip = () => {
+    // Показываем кнопки рейтинга после переворота карточки
+    setTimeout(() => {
+      setShowRating(true);
+    }, 300);
+  };
+
+  const currentCard = cards[currentCardIndex];
+
   return (
-    <div>
-      <h1>Learn Page</h1>
-      <p>SR flashcards will be implemented here</p>
+    <div className="learn-page">
+      <h1>Учим таблицу умножения</h1>
+      <div className="progress">
+        Карточка {currentCardIndex + 1} из {cards.length}
+      </div>
+      
+      <div onClick={handleCardFlip}>
+        <FlashCard
+          factorA={currentCard.factorA}
+          factorB={currentCard.factorB}
+          answer={currentCard.answer}
+        />
+      </div>
+
+      {showRating && (
+        <div className="rating-section">
+          <p>Насколько хорошо вы знали ответ?</p>
+          <SRRatingButtons onRate={handleRate} />
+        </div>
+      )}
     </div>
   );
 };
