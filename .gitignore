@@ -1,48 +1,46 @@
-```
+```gitignore
 # Dependencies
 node_modules/
 
 # Build outputs
 dist/
 build/
-*.js
-*.css
-*.ts
-*.tsx
-
-# Environment
-.env
-.env.local
-.env.*
-
-# Editors
-.vscode/
-.idea/
-*.swp
-*.swo
-*.tmp
-
-# Logs
-*.log
+target/
 
 # Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-
-# Coverage
-coverage/
-htmlcov/
-.coverage
-
-# MyPy
-.mypy_cache/
-
-# PyTest
-.pytest_cache/
-
-# Virtual environments
+.Python
+env/
 venv/
 .venv/
+.ENV
+.ENV.*
+.env
+.env.*
+
+# Logs
+*.log
+
+# Coverage
+.coverage
+coverage/
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.mypy_cache/
+*.tmp
 ```
