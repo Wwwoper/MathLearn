@@ -81,19 +81,15 @@ def run_migrations_online() -> None:
             poolclass=pool.NullPool,
         )
 
-        async def run_migration(connection):
-            context.configure(
-                connection=connection,
-                target_metadata=target_metadata,
-                render_as_batch=True,
-            )
-
-            with context.begin_transaction():
-                context.run_migrations()
-
         async def async_main():
             async with connectable.connect() as connection:
-                await connection.run_sync(run_migration)
+                context.configure(
+                    connection=connection,
+                    target_metadata=target_metadata,
+                    render_as_batch=True,
+                )
+                with context.begin_transaction():
+                    await connection.run_sync(lambda conn, _: context.run_migrations(), None)
             await connectable.dispose()
 
         import asyncio
