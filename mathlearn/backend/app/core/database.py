@@ -26,8 +26,21 @@ class Base(DeclarativeBase):
     pass
 
 
+async def get_async_session() -> AsyncSession:
+    """Зависимость для получения асинхронной сессии БД."""
+    async with async_session_maker() as session:
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
+
+
 async def get_db() -> AsyncSession:
-    """Зависимость для получения сессии БД."""
+    """Зависимость для получения сессии БД (алиас)."""
     async with async_session_maker() as session:
         try:
             yield session
