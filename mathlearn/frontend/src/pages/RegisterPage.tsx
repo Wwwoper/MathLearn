@@ -34,14 +34,25 @@ const RegisterPage = () => {
     setIsLoading(true);
 
     try {
+      console.log('Sending register request...');
       const response = await apiClient.post('/auth/register', formData);
+      console.log('Register response:', response.data);
       const { user, access_token } = response.data;
-      
+
+      if (!user) {
+        console.error('No user in response');
+        setError('Ошибка: данные пользователя не получены');
+        return;
+      }
+
+      console.log('Setting user and token...');
       setUser(user);
       setToken(access_token);
-      
+      console.log('User and token set, navigating to home...');
+
       navigate('/');
     } catch (err: unknown) {
+      console.error('Register error:', err);
       if (axios.isAxiosError(err)) {
         setError(err.response?.data?.detail || 'Ошибка регистрации');
       } else {
