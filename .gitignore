@@ -1,17 +1,11 @@
-```
+```gitignore
 # Dependencies
 node_modules/
 
 # Build outputs
 dist/
 build/
-*.bundle.js
-*.min.js
 *.css.map
-
-# Logs and temp files
-*.log
-*.tmp
 
 # Environment
 .env
@@ -24,30 +18,39 @@ build/
 *.swp
 *.swo
 
-# OS
-.DS_Store
-Thumbs.db
+# Logs
+*.log
 
-# Coverage
-coverage/
-htmlcov/
-.coverage
+# Temp files
+*.tmp
 
 # Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.Python
-env/
-venv/
-.venv/
-pip-log.txt
-pip-delete-this-directory.txt
-.tox/
-.coverage
-.nox/
+
+# Compiled files
+*.o
+*.obj
 *.so
-*.egg-info/
-.eggs/
+*.a
+*.dll
+*.exe
+*.out
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Caches
+.mypy_cache/
+.pytest_cache/
+.gradle/
+target/
+
+# System files
+.DS_Store
+Thumbs.db
 ```
