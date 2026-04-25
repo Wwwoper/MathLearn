@@ -3,16 +3,4 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.env
-.env.local
-.env.*
-.vscode/
-.idea/
-venv/
-.venv/
-node_modules/
-dist/
-build/
-*.log
-*.tmp
 ```
