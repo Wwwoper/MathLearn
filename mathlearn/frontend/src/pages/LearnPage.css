@@ -45,6 +45,21 @@
   }
 }
 
+.ready-for-next-hint {
+  margin-top: 1.5rem;
+  animation: fadeIn 0.5s ease-in;
+}
+
+.ready-for-next-hint p {
+  color: #667eea;
+  font-size: 1rem;
+  font-weight: 500;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 @media (max-width: 768px) {
   .learn-page {
     padding: 1rem;

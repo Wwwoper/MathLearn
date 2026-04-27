@@ -1,1 +1,52 @@
-Nothing should be ignored in this case, as only a Python source file was modified and no build artifacts, dependencies, or temporary files were detected.
+# Dependencies
+node_modules/
+
+# Build artifacts
+dist/
+build/
+*.js.map
+*.css.map
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Temp files
+*.tmp
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Compiled
+*.o
+*.obj
+*.so
+*.a
+*.dll
+*.exe
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Testing
+.pytest_cache/
+.mypy_cache/
+
+# OS
+.DS_Store
+Thumbs.db
