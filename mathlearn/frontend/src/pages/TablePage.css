@@ -1,0 +1,457 @@
+.table-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.table-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.5rem;
+  color: #666;
+}
+
+.table-title {
+  text-align: center;
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 2rem;
+  animation: fadeInDown 0.5s ease;
+}
+
+/* Общий прогресс */
+.overall-progress-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: center;
+  color: white;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  animation: fadeInUp 0.5s ease;
+}
+
+.card-subtitle {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.9;
+}
+
+.overall-percent-circle {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 1.5rem;
+}
+
+.progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.2);
+}
+
+.progress-ring-fill {
+  fill: none;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease-in-out, stroke 0.3s ease;
+}
+
+.percent-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3rem;
+  font-weight: bold;
+  color: white;
+}
+
+.overall-description {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* Статусы карточек */
+.status-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+  animation: fadeInUp 0.6s ease;
+}
+
+.status-card {
+  background: white;
+  border-radius: 15px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 3px solid transparent;
+}
+
+.status-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.status-card.new {
+  border-color: #E0E0E0;
+}
+
+.status-card.learning {
+  border-color: #FFC107;
+}
+
+.status-card.mastered {
+  border-color: #4CAF50;
+}
+
+.status-card.review {
+  border-color: #F44336;
+}
+
+.status-emoji {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.status-count {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  display: block;
+}
+
+.status-label {
+  font-size: 0.9rem;
+  color: #666;
+  display: block;
+  margin-top: 0.5rem;
+}
+
+/* Прогресс по таблицам */
+.tables-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  animation: fadeInUp 0.7s ease;
+}
+
+.section-title {
+  grid-column: 1 / -1;
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.table-card {
+  background: white;
+  border-radius: 15px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border-left: 5px solid;
+}
+
+.table-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.table-card.new {
+  border-left-color: #E0E0E0;
+}
+
+.table-card.learning {
+  border-left-color: #FFC107;
+}
+
+.table-card.mastered {
+  border-left-color: #4CAF50;
+}
+
+.table-card.review {
+  border-left-color: #F44336;
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.table-emoji {
+  font-size: 1.5rem;
+}
+
+.table-name {
+  font-size: 1.2rem;
+  color: #333;
+  margin: 0;
+  flex: 1;
+}
+
+.table-progress-bar-container {
+  background: #E0E0E0;
+  border-radius: 10px;
+  height: 12px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.table-progress-bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 1s ease;
+}
+
+.table-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.table-percent {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.table-fraction {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.table-status-text {
+  font-size: 0.85rem;
+  color: #666;
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: #f5f5f5;
+  border-radius: 12px;
+}
+
+/* Рекомендации */
+.recommendations-card {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  border-radius: 20px;
+  padding: 2rem;
+  color: white;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 30px rgba(245, 87, 108, 0.3);
+  animation: fadeInUp 0.8s ease;
+}
+
+.recommendations-card .section-title {
+  color: white;
+}
+
+.recommendations-list {
+  margin-bottom: 1.5rem;
+}
+
+.recommendation-item {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  backdrop-filter: blur(10px);
+}
+
+.recommendation-item.success {
+  background: rgba(76, 175, 80, 0.3);
+}
+
+.rec-emoji {
+  font-size: 1.5rem;
+}
+
+.rec-text {
+  font-size: 1rem;
+  flex: 1;
+}
+
+.rec-text strong {
+  color: white;
+}
+
+.start-learning-button {
+  display: inline-block;
+  background: white;
+  color: #f5576c;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.start-learning-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Детализация */
+.details-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  animation: fadeInUp 0.9s ease;
+}
+
+.details-table {
+  margin-top: 1rem;
+}
+
+.details-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 2fr;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: #f5f5f5;
+  border-radius: 10px;
+  font-weight: bold;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.details-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 2fr;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-bottom: 1px solid #eee;
+  font-size: 0.85rem;
+  color: #666;
+  transition: background 0.2s ease;
+}
+
+.details-row:hover {
+  background: #f9f9f9;
+}
+
+.details-row:last-child {
+  border-bottom: none;
+}
+
+.details-note {
+  margin-top: 1rem;
+  text-align: center;
+  color: #999;
+  font-size: 0.9rem;
+}
+
+/* Анимации */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .table-page {
+    padding: 1rem;
+  }
+
+  .table-title {
+    font-size: 2rem;
+  }
+
+  .overall-percent-circle {
+    width: 150px;
+    height: 150px;
+  }
+
+  .progress-ring-bg,
+  .progress-ring-fill {
+    r: 60;
+  }
+
+  .percent-text {
+    font-size: 2rem;
+  }
+
+  .status-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .tables-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .details-header,
+  .details-row {
+    grid-template-columns: 1.5fr 1fr 1fr;
+    font-size: 0.75rem;
+  }
+
+  .details-header span:nth-child(n+4),
+  .details-row span:nth-child(n+4) {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .table-title {
+    font-size: 1.5rem;
+  }
+
+  .status-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .status-card {
+    padding: 1rem;
+  }
+
+  .status-emoji {
+    font-size: 2rem;
+  }
+
+  .status-count {
+    font-size: 1.5rem;
+  }
+
+  .recommendations-card {
+    padding: 1.5rem;
+  }
+
+  .start-learning-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+}
