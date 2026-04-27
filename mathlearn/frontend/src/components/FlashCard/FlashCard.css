@@ -81,6 +81,21 @@
   animation: pulse 2s infinite;
 }
 
+.double-tap-hint {
+  background: rgba(255, 235, 59, 0.3);
+  animation: bounce 0.5s ease-in-out;
+  font-weight: bold;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
 @keyframes pulse {
   0%, 100% {
     transform: scale(1);
