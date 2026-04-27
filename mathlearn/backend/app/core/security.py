@@ -61,6 +61,6 @@ def decode_token(token: str) -> dict[str, Any] | None:
 
 def create_token_pair(user_id: int) -> tuple[str, str]:
     """Создание пары токенов (access и refresh)."""
-    access_token = create_access_token({"sub": user_id})
-    refresh_token = create_refresh_token({"sub": user_id})
+    access_token = create_access_token({"sub": str(user_id)})
+    refresh_token = create_refresh_token({"sub": str(user_id)})
     return access_token, refresh_token

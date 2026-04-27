@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.routers import auth_router, sr_router, drill_router
@@ -12,8 +13,17 @@ app = FastAPI(
     debug=settings.DEBUG,
 )
 
+# Настройка CORS для фронтенда
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # В продакшене заменить на конкретные домены
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Подключение роутов
-app.include_router(auth_router)
+app.include_router(auth_router, prefix="/api")
 app.include_router(sr_router, prefix="/api")
 app.include_router(drill_router, prefix="/api")
 app.include_router(stats_router, prefix="/api")

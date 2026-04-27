@@ -2,6 +2,8 @@
 
 from pydantic import BaseModel, EmailStr, Field
 
+from app.schemas.user import UserResponse
+
 
 class RegisterRequest(BaseModel):
     """Схема запроса на регистрацию пользователя."""
@@ -19,11 +21,12 @@ class LoginRequest(BaseModel):
 
 
 class TokenResponse(BaseModel):
-    """Схема ответа с токенами."""
+    """Схема ответа с токенами и данными пользователя."""
 
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
+    user: UserResponse | None = None
 
 
 class TokenPayload(BaseModel):

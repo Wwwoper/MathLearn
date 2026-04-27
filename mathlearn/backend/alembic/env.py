@@ -60,6 +60,9 @@ def run_migrations_offline() -> None:
 
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode with async support."""
+    from sqlalchemy.ext.asyncio import AsyncConnection
+    from alembic.context import configure as alembic_configure
+    
     url = config.get_main_option("sqlalchemy.url")
     
     # Для SQLite (тестирование/оффлайн режим) используем синхронный движок
@@ -81,19 +84,19 @@ def run_migrations_online() -> None:
             poolclass=pool.NullPool,
         )
 
-        async def run_migration(connection: Connection):
-            context.configure(
-                connection=connection,
-                target_metadata=target_metadata,
-                render_as_batch=True,
-            )
-
-            with context.begin_transaction():
-                context.run_migrations()
-
         async def async_main():
             async with connectable.connect() as connection:
-                await connection.run_sync(run_migration)
+                # Для асинхронного соединения нужно получить синхронное соединение
+                def run_migrations(conn: Connection):
+                    context.configure(
+                        connection=conn,
+                        target_metadata=target_metadata,
+                        render_as_batch=True,
+                    )
+                    with context.begin_transaction():
+                        context.run_migrations()
+                
+                await connection.run_sync(run_migrations)
             await connectable.dispose()
 
         import asyncio

@@ -1,0 +1,60 @@
+.sr-rating-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  padding: 16px;
+}
+
+.sr-rating-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 80px;
+  border: 3px solid;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sr-rating-button:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.sr-rating-button:active {
+  transform: translateY(-2px);
+}
+
+.sr-rating-emoji {
+  font-size: 28px;
+  margin-bottom: 4px;
+}
+
+.sr-rating-value {
+  font-size: 16px;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+@media (max-width: 480px) {
+  .sr-rating-buttons {
+    gap: 8px;
+  }
+
+  .sr-rating-button {
+    width: 52px;
+    height: 68px;
+  }
+
+  .sr-rating-emoji {
+    font-size: 24px;
+  }
+
+  .sr-rating-value {
+    font-size: 14px;
+  }
+}
