@@ -45,30 +45,41 @@
   }
 }
 
-.ready-for-next-hint {
-  margin-top: 1.5rem;
-  animation: bounce 1s infinite;
+.ready-for-next-section {
+  margin-top: 2rem;
+  animation: fadeIn 0.5s ease-in;
 }
 
-@keyframes bounce {
+.next-card-button {
+  background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+  color: white;
+  border: none;
+  padding: 1.2rem 3rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(255, 65, 108, 0.5);
+  transition: all 0.3s ease;
+  animation: pulse 1.5s infinite;
+}
+
+.next-card-button:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(255, 65, 108, 0.7);
+}
+
+.next-card-button:active {
+  transform: translateY(-1px) scale(1.02);
+}
+
+@keyframes pulse {
   0%, 100% {
-    transform: translateY(0);
+    transform: scale(1);
   }
   50% {
-    transform: translateY(-10px);
+    transform: scale(1.05);
   }
-}
-
-.ready-for-next-hint p {
-  font-size: 1.3rem;
-  font-weight: 600;
-  background: rgba(255, 65, 108, 0.9);
-  backdrop-filter: blur(10px);
-  color: white;
-  padding: 1rem 2rem;
-  display: inline-block;
-  border-radius: 25px;
-  box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4);
 }
 
 /* Статистика */
@@ -298,10 +309,5 @@
 
   .stats-btn {
     width: 100%;
-  }
-
-  .ready-for-next-hint p {
-    font-size: 1.1rem;
-    padding: 0.75rem 1.5rem;
   }
 }

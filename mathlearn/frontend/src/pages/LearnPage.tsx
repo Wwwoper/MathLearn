@@ -70,23 +70,25 @@ const LearnPage = () => {
     setIsReadyForNext(true);
   };
 
-  const handleCardFlip = () => {
-    if (isReadyForNext) {
-      // Переход к следующей карточке
-      if (currentCardIndex < cards.length - 1) {
-        setIsFlipped(false);
-        setTimeout(() => {
-          setCurrentCardIndex(prev => prev + 1);
-          setIsReadyForNext(false);
-          setShowRating(false);
-        }, 300);
-      } else {
-        // Показываем экран статистики после прохождения всех карточек
-        setShowStats(true);
+  const handleNextCard = () => {
+    // Переход к следующей карточке
+    if (currentCardIndex < cards.length - 1) {
+      setIsFlipped(false);
+      setTimeout(() => {
+        setCurrentCardIndex(prev => prev + 1);
         setIsReadyForNext(false);
-        setIsFlipped(false);
-      }
-    } else if (!isFlipped) {
+        setShowRating(false);
+      }, 300);
+    } else {
+      // Показываем экран статистики после прохождения всех карточек
+      setShowStats(true);
+      setIsReadyForNext(false);
+      setIsFlipped(false);
+    }
+  };
+
+  const handleCardFlip = () => {
+    if (!isFlipped) {
       // Показываем кнопки рейтинга после переворота карточки
       setIsFlipped(true);
       setTimeout(() => {
@@ -194,8 +196,10 @@ const LearnPage = () => {
       )}
 
       {isReadyForNext && (
-        <div className="ready-for-next-hint">
-          <p>Нажмите на карточку, чтобы продолжить</p>
+        <div className="ready-for-next-section">
+          <button className="next-card-button" onClick={handleNextCard}>
+            Далее ➡️
+          </button>
         </div>
       )}
     </div>
