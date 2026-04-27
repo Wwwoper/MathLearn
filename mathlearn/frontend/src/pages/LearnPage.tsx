@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FlashCard } from '../components/FlashCard';
 import SRRatingButtons from '../components/SRRatingButtons';
+import Confetti from 'react-confetti';
 import './LearnPage.css';
 
 interface CardData {
@@ -24,6 +25,9 @@ const LearnPage = () => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [stats, setStats] = useState<StatsData>({ excellent: 0, good: 0, hard: 0, repeat: 0 });
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+  const [userName, setUserName] = useState<string>('');
 
   // Demo data - в реальном приложении будет загружаться из бэкенда
   const cards: CardData[] = [
@@ -40,6 +44,18 @@ const LearnPage = () => {
     if (savedStats) {
       setStats(JSON.parse(savedStats));
     }
+    
+    // Получение имени пользователя из localStorage
+    const savedUser = localStorage.getItem('userName');
+    if (savedUser) {
+      setUserName(savedUser);
+    }
+    
+    // Установка размера окна для конфетти
+    setWindowSize({
+      width: window.innerWidth,
+      height: window.innerHeight
+    });
   }, []);
 
   // Сохранение статистики в localStorage
@@ -56,8 +72,14 @@ const LearnPage = () => {
     
     if (rating === 5) {
       newStats.excellent += 1;
+      // Запуск конфетти для оценки "Отлично"
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 3000);
     } else if (rating === 4) {
       newStats.good += 1;
+      // Запуск конфетти для оценки "Хорошо"
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 2000);
     } else if (rating === 3) {
       newStats.hard += 1;
     } else {
@@ -175,6 +197,16 @@ const LearnPage = () => {
 
   return (
     <div className="learn-page">
+      {showConfetti && (
+        <Confetti
+          width={windowSize.width}
+          height={windowSize.height}
+          recycle={false}
+          numberOfPieces={200}
+          colors={['#ff416c', '#ff4b2b', '#4CAF50', '#2196F3', '#FFC107']}
+        />
+      )}
+      
       <h1>Учим таблицу умножения</h1>
       <div className="progress">
         Карточка {currentCardIndex + 1} из {cards.length}

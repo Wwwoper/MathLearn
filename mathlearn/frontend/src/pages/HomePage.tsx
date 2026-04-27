@@ -89,6 +89,15 @@ const HomePage = () => {
     <div className="home-page">
       <h1 className="home-title">Добро пожаловать в MathLearn!</h1>
 
+      {/* Карточка "Учить таблицу" с выделением */}
+      <div className="home-section">
+        <Link to="/learn" className="start-button learn-table-card">
+          <span className="fire-badge">🔥</span>
+          <span className="card-title-text">Учить таблицу умножения</span>
+          <span className="pulse-dot"></span>
+        </Link>
+      </div>
+
       {/* Streak Counter с анимацией */}
       <div className="home-section">
         <div className="streak-counter">
