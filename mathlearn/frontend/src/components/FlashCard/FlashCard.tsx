@@ -1,24 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './FlashCard.css';
 
 interface FlashCardProps {
   factorA: number;
   factorB: number;
   answer: number;
+  isFlipped: boolean;
+  onFlip: () => void;
 }
 
-export const FlashCard: React.FC<FlashCardProps> = ({ factorA, factorB, answer }) => {
-  const [isFlipped, setIsFlipped] = useState(false);
-
-  const handleClick = () => {
-    setIsFlipped(!isFlipped);
-  };
-
+export const FlashCard: React.FC<FlashCardProps> = ({ factorA, factorB, answer, isFlipped, onFlip }) => {
   return (
     <div className="flashcard-container">
       <div
         className={`flashcard ${isFlipped ? 'flipped' : ''}`}
-        onClick={handleClick}
+        onClick={onFlip}
       >
         <div className="flashcard-face flashcard-front">
           <div className="question">
