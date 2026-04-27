@@ -81,10 +81,28 @@
   animation: pulse 2s infinite;
 }
 
-.double-tap-hint {
-  background: rgba(255, 235, 59, 0.3);
-  animation: bounce 0.5s ease-in-out;
+.show-answer-button {
+  margin-top: 24px;
+  font-size: 1.3rem;
   font-weight: bold;
+  color: white;
+  background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4);
+  animation: pulse 2s infinite;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.show-answer-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(255, 65, 108, 0.6);
+}
+
+.show-answer-button:active {
+  transform: scale(0.95);
 }
 
 @keyframes bounce {
