@@ -13,6 +13,7 @@ interface CardData {
 const LearnPage = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showRating, setShowRating] = useState(false);
+  const [isReadyForNext, setIsReadyForNext] = useState(false);
 
   // Demo data - в реальном приложении будет загружаться из бэкенда
   const cards: CardData[] = [
@@ -26,19 +27,27 @@ const LearnPage = () => {
   const handleRate = (rating: number) => {
     console.log(`Rated ${rating}`);
     // Здесь будет логика интервального повторения
-    if (currentCardIndex < cards.length - 1) {
-      setCurrentCardIndex(currentCardIndex + 1);
-      setShowRating(false);
-    } else {
-      alert('Все карточки пройдены!');
-    }
+    setShowRating(false);
+    setIsReadyForNext(true);
   };
 
   const handleCardFlip = () => {
-    // Показываем кнопки рейтинга после переворота карточки
-    setTimeout(() => {
-      setShowRating(true);
-    }, 300);
+    if (isReadyForNext) {
+      // Переход к следующей карточке
+      if (currentCardIndex < cards.length - 1) {
+        setCurrentCardIndex(currentCardIndex + 1);
+        setIsReadyForNext(false);
+        setShowRating(false);
+      } else {
+        alert('Все карточки пройдены!');
+        setIsReadyForNext(false);
+      }
+    } else {
+      // Показываем кнопки рейтинга после переворота карточки
+      setTimeout(() => {
+        setShowRating(true);
+      }, 300);
+    }
   };
 
   const currentCard = cards[currentCardIndex];
@@ -62,6 +71,12 @@ const LearnPage = () => {
         <div className="rating-section">
           <p>Насколько хорошо вы знали ответ?</p>
           <SRRatingButtons onRate={handleRate} />
+        </div>
+      )}
+
+      {isReadyForNext && (
+        <div className="ready-for-next-hint">
+          <p>Нажмите на карточку, чтобы продолжить</p>
         </div>
       )}
     </div>
