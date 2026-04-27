@@ -14,6 +14,7 @@ const LearnPage = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showRating, setShowRating] = useState(false);
   const [isReadyForNext, setIsReadyForNext] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
 
   // Demo data - в реальном приложении будет загружаться из бэкенда
   const cards: CardData[] = [
@@ -35,15 +36,20 @@ const LearnPage = () => {
     if (isReadyForNext) {
       // Переход к следующей карточке
       if (currentCardIndex < cards.length - 1) {
-        setCurrentCardIndex(currentCardIndex + 1);
-        setIsReadyForNext(false);
-        setShowRating(false);
+        setIsFlipped(false);
+        setTimeout(() => {
+          setCurrentCardIndex(prev => prev + 1);
+          setIsReadyForNext(false);
+          setShowRating(false);
+        }, 300);
       } else {
         alert('Все карточки пройдены!');
         setIsReadyForNext(false);
+        setIsFlipped(false);
       }
-    } else {
+    } else if (!isFlipped) {
       // Показываем кнопки рейтинга после переворота карточки
+      setIsFlipped(true);
       setTimeout(() => {
         setShowRating(true);
       }, 300);
@@ -59,13 +65,13 @@ const LearnPage = () => {
         Карточка {currentCardIndex + 1} из {cards.length}
       </div>
       
-      <div onClick={handleCardFlip}>
-        <FlashCard
-          factorA={currentCard.factorA}
-          factorB={currentCard.factorB}
-          answer={currentCard.answer}
-        />
-      </div>
+      <FlashCard
+        factorA={currentCard.factorA}
+        factorB={currentCard.factorB}
+        answer={currentCard.answer}
+        isFlipped={isFlipped}
+        onFlip={handleCardFlip}
+      />
 
       {showRating && (
         <div className="rating-section">
