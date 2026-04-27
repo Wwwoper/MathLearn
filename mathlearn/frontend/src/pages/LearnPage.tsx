@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FlashCard } from '../components/FlashCard';
 import SRRatingButtons from '../components/SRRatingButtons';
 import './LearnPage.css';
@@ -10,11 +10,20 @@ interface CardData {
   id: number;
 }
 
+interface StatsData {
+  excellent: number;
+  good: number;
+  hard: number;
+  repeat: number;
+}
+
 const LearnPage = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showRating, setShowRating] = useState(false);
   const [isReadyForNext, setIsReadyForNext] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [showStats, setShowStats] = useState(false);
+  const [stats, setStats] = useState<StatsData>({ excellent: 0, good: 0, hard: 0, repeat: 0 });
 
   // Demo data - в реальном приложении будет загружаться из бэкенда
   const cards: CardData[] = [
@@ -25,9 +34,38 @@ const LearnPage = () => {
     { id: 5, factorA: 3, factorB: 7, answer: 21 },
   ];
 
+  // Загрузка статистики из localStorage при монтировании
+  useEffect(() => {
+    const savedStats = localStorage.getItem('flashcard-stats');
+    if (savedStats) {
+      setStats(JSON.parse(savedStats));
+    }
+  }, []);
+
+  // Сохранение статистики в localStorage
+  const saveStats = (newStats: StatsData) => {
+    localStorage.setItem('flashcard-stats', JSON.stringify(newStats));
+    setStats(newStats);
+  };
+
   const handleRate = (rating: number) => {
     console.log(`Rated ${rating}`);
-    // Здесь будет логика интервального повторения
+    
+    // Обновление статистики на основе рейтинга
+    const newStats = { ...stats };
+    
+    if (rating === 5) {
+      newStats.excellent += 1;
+    } else if (rating === 4) {
+      newStats.good += 1;
+    } else if (rating === 3) {
+      newStats.hard += 1;
+    } else {
+      newStats.repeat += 1;
+    }
+    
+    saveStats(newStats);
+    
     setShowRating(false);
     setIsReadyForNext(true);
   };
@@ -43,7 +81,8 @@ const LearnPage = () => {
           setShowRating(false);
         }, 300);
       } else {
-        alert('Все карточки пройдены!');
+        // Показываем экран статистики после прохождения всех карточек
+        setShowStats(true);
         setIsReadyForNext(false);
         setIsFlipped(false);
       }
@@ -55,6 +94,80 @@ const LearnPage = () => {
       }, 300);
     }
   };
+
+  const handleRetry = () => {
+    setCurrentCardIndex(0);
+    setIsFlipped(false);
+    setShowRating(false);
+    setIsReadyForNext(false);
+    setShowStats(false);
+  };
+
+  const handleHome = () => {
+    // Навигация на главную страницу
+    window.location.href = '/';
+  };
+
+  // Вычисление процентов для круговой диаграммы
+  const totalCards = stats.excellent + stats.good + stats.hard + stats.repeat;
+  const excellentPercent = totalCards > 0 ? (stats.excellent / totalCards) * 100 : 0;
+  const goodPercent = totalCards > 0 ? ((stats.excellent + stats.good) / totalCards) * 100 : 0;
+  const hardPercent = totalCards > 0 ? ((stats.excellent + stats.good + stats.hard) / totalCards) * 100 : 0;
+
+  // Экран статистики
+  if (showStats) {
+    return (
+      <div className="learn-page">
+        <div className="stats-screen">
+          <h2>🎉 Статистика</h2>
+          
+          <div className="pie-chart-container" style={{
+            '--excellent-percent': `${excellentPercent}%`,
+            '--good-percent': `${goodPercent}%`,
+            '--hard-percent': `${hardPercent}%`,
+          } as React.CSSProperties}>
+            <div className="pie-chart"></div>
+            <div className="pie-chart-center">
+              <span>{totalCards}</span>
+              <span className="pie-chart-label">карточек</span>
+            </div>
+          </div>
+
+          <div className="stats-categories">
+            <div className="stat-category easy">
+              <span className="emoji">😊</span>
+              <span className="label">Легко</span>
+              <span className="count">{stats.excellent}</span>
+            </div>
+            <div className="stat-category good">
+              <span className="emoji">👍</span>
+              <span className="label">Хорошо</span>
+              <span className="count">{stats.good}</span>
+            </div>
+            <div className="stat-category hard">
+              <span className="emoji">🤔</span>
+              <span className="label">Трудно</span>
+              <span className="count">{stats.hard}</span>
+            </div>
+            <div className="stat-category repeat">
+              <span className="emoji">📚</span>
+              <span className="label">Повторить</span>
+              <span className="count">{stats.repeat}</span>
+            </div>
+          </div>
+
+          <div className="stats-buttons">
+            <button className="stats-btn retry" onClick={handleRetry}>
+              🔄 Пройти ещё раз
+            </button>
+            <button className="stats-btn home" onClick={handleHome}>
+              🏠 На главную
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const currentCard = cards[currentCardIndex];
 
