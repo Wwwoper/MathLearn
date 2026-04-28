@@ -14,7 +14,9 @@ class ReviewService:
         card: SRCard,
         is_correct: bool,
         response_time_sec: float,
-        mode: str = "classic"
+        mode: str = "classic",
+        session_start_time: Optional[datetime] = None,
+        time_limit_sec: Optional[int] = None
     ) -> Dict[str, Any]:
         """
         Обрабатывает ответ пользователя и возвращает результат с начисленным XP.
@@ -25,9 +27,11 @@ class ReviewService:
             is_correct: Правильность ответа
             response_time_sec: Время ответа в секундах
             mode: Режим обучения
+            session_start_time: Время начала сессии (для режима Fighter)
+            time_limit_sec: Лимит времени сессии в секундах (для режима Fighter)
             
         Returns:
-            Словарь с результатами: xp_gained, speed_bonus_xp, is_timeout, new_streak
+            Словарь с результатами: xp_gained, speed_bonus_xp, is_timeout, new_streak, is_session_expired
         """
         mode_config = get_mode_config(mode)
         base_xp = mode_config.get("base_xp", 10)
@@ -37,8 +41,18 @@ class ReviewService:
             "xp_gained": 0,
             "speed_bonus_xp": 0,
             "is_timeout": False,
-            "streak_maintained": False
+            "streak_maintained": False,
+            "is_session_expired": False
         }
+        
+        # Проверка истечения времени сессии для режима Fighter
+        if mode == "fighter" and session_start_time and time_limit_sec:
+            elapsed_time = (datetime.utcnow() - session_start_time).total_seconds()
+            if elapsed_time > time_limit_sec:
+                result["is_session_expired"] = True
+                # В режиме боец истечение времени сессии завершает игру
+                is_correct = False
+                result["is_correct"] = False
         
         # Проверка тайм-аута для режима Sprinter
         if mode == "sprinter":
