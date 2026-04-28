@@ -1,51 +1,52 @@
 ```
-# Database migrations
-alembic/versions/*.py
-
-# Environment variables
-.env
-.env.local
-*.env.*
-
-# Dependencies
-node_modules/
-.venv/
-venv/
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+.Python
+env/
+venv/
+.venv/
+.ENV
+.ENV.*
+.venv.bak/
+.venv_*/
+.ipython/
+.jupyter/
 
-# Build artifacts
-build/
-dist/
-*.egg-info/
+# Alembic
+alembic/
+
+# Database
+*.db
+*.db-journal
 
 # Logs
 *.log
 
+# Environment variables
+.env
+.env.*
+.env.local
+.env.production
+.env.development
+.env.test
+
 # OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+desktop.ini
 
-# IDE specific
+# Editor files
 .vscode/
 .idea/
 *.swp
 *.swo
-*.tmp
-
-# Coverage reports
-coverage/
-htmlcov/
-.coverage
-
-# Python cache
-__pycache__/
-*.py[cod]
-*$py.class
-
-# Alembic
-alembic/env.py
-alembic/versions/
+*~
 ```
