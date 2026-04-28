@@ -13,6 +13,7 @@ from app.models.sr_card import SRCard
 from app.models.sr_review import SRReview
 from app.schemas.sr import SRCardResponse, SRReviewRequest, SRProgressResponse
 from app.services.sr_engine import calculate_next_review
+from app.services.sr_card_service import SRCardService
 
 router = APIRouter(prefix="/sr", tags=["Интервальное повторение"])
 
@@ -24,18 +25,13 @@ async def get_sr_queue(
 ):
     """Получить карточки для повторения.
     
-    Возвращает карточки, где next_review_at <= now(), 
-    отсортированные по ease_factor ASC (сначала самые лёгкие для забывания).
+    Возвращает карточки с учётом режима обучения:
+    - classic/sprinter/остальные: next_review_at <= now(), сортировка по ease_factor ASC
+    - weak_spots: игнорирует next_review_at, сортировка по ease_factor ASC (15 карточек)
+    - classic: только разблокированные карточки (locked=False)
     """
-    now = datetime.now()
-    
-    result = await db.execute(
-        select(SRCard)
-        .where(SRCard.user_id == current_user.id)
-        .where(SRCard.next_review_at <= now)
-        .order_by(SRCard.ease_factor.asc())
-    )
-    cards = result.scalars().all()
+    sr_service = SRCardService(db)
+    cards = await sr_service.get_due_cards(current_user)
     
     return cards
 
@@ -50,14 +46,13 @@ async def submit_review(
     
     Принимает {card_id, rating, response_time_ms}, вызывает SM-2,
     обновляет карточку и сохраняет отзыв.
+    В режиме classic проверяет возможность разблокировки следующей таблицы.
+    В режиме zen уменьшает количество подсказок.
     """
+    sr_service = SRCardService(db)
+    
     # Проверка существования карточки и принадлежности пользователю
-    result = await db.execute(
-        select(SRCard)
-        .where(SRCard.id == review_data.card_id)
-        .where(SRCard.user_id == current_user.id)
-    )
-    card = result.scalar_one_or_none()
+    card = await sr_service.get_card_by_id(review_data.card_id, current_user.id)
     
     if not card:
         raise HTTPException(
@@ -79,6 +74,10 @@ async def submit_review(
     # Увеличение lapses при плохом ответе
     if review_data.rating < 2:
         card.lapses += 1
+    else:
+        # Уменьшение подсказок в режиме zen при успешном ответе
+        if current_user.learning_mode == "zen" and card.hints_remaining > 0:
+            await sr_service.decrement_hint(card)
     
     # Сохранение отзыва
     review = SRReview(
@@ -92,7 +91,17 @@ async def submit_review(
     await db.commit()
     await db.refresh(card)
     
-    return {"message": "Отзыв сохранён", "card": SRCardResponse.model_validate(card)}
+    # Проверка разблокировки следующей таблицы в режиме classic
+    unlocked = False
+    next_table = None
+    if current_user.learning_mode == "classic":
+        unlocked, next_table = await sr_service.unlock_next_table(current_user, card.factor_b)
+    
+    response = {"message": "Отзыв сохранён", "card": SRCardResponse.model_validate(card)}
+    if unlocked:
+        response["unlocked_next_table"] = next_table
+    
+    return response
 
 
 @router.get("/progress", response_model=SRProgressResponse)
