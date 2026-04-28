@@ -311,3 +311,78 @@
     width: 100%;
   }
 }
+
+/* T-LM-18: Стили для ежедневного вызова в режиме fighter */
+.daily-challenge-section {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  padding: 2rem;
+  border-radius: 20px;
+  margin: 2rem 0;
+  color: white;
+  box-shadow: 0 8px 32px rgba(238, 90, 36, 0.4);
+  animation: fadeIn 0.5s ease-in;
+}
+
+.daily-challenge-section h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.daily-challenge-section p {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.95;
+}
+
+.accept-challenge-btn {
+  background: linear-gradient(135deg, #f9ca24 0%, #f0932b 100%);
+  color: #333;
+  border: none;
+  padding: 1.2rem 2.5rem;
+  font-size: 1.3rem;
+  font-weight: bold;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(249, 202, 36, 0.5);
+  transition: all 0.3s ease;
+  animation: pulse 1.5s infinite;
+}
+
+.accept-challenge-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(249, 202, 36, 0.7);
+}
+
+.accept-challenge-btn:active {
+  transform: translateY(-1px) scale(1.02);
+}
+
+/* T-LM-18: Скрытие таймера и прогресс-бара для режима zen */
+.zen-mode .timer-progress-bar,
+.zen-mode .progress-timer {
+  display: none !important;
+}
+
+.zen-hint {
+  background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
+  color: #2d3436;
+  padding: 0.75rem 1.5rem;
+  border-radius: 15px;
+  display: inline-block;
+  margin: 1rem 0;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(168, 230, 207, 0.4);
+}
+
+/* T-LM-18: Прогресс сессии для streak_hunter */
+.streak-session-info {
+  background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(232, 67, 147, 0.4);
+}

@@ -22,16 +22,20 @@ const LearnPage = () => {
   const [stats, setStats] = useState<StatsData>({ excellent: 0, good: 0, hard: 0, repeat: 0 });
   const [showConfetti, setShowConfetti] = useState(false);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
-  const [userName, setUserName] = useState<string>('');
+  const [sessionStarted, setSessionStarted] = useState(false);
+  const [dailyChallengeAccepted, setDailyChallengeAccepted] = useState(false);
   
   // Получаем текущий режим обучения из store
   const { user } = useAuthStore();
   const currentMode = user?.learning_mode || 'classic';
   
+  // T-LM-18: Для streak_hunter ограничиваем сессию до 5 вопросов
+  const sessionLimit = currentMode === 'streak_hunter' ? 5 : 20;
+  
   // Используем хук useSRQueue для получения очереди карточек (T-LM-17)
-  const { cards: srCards, isLoading, progress, refreshQueue } = useSRQueue({
+  const { cards: srCards, isLoading, progress } = useSRQueue({
     mode: currentMode,
-    limit: 20,
+    limit: sessionLimit,
   });
   
   // Преобразуем SRCard в формат для совместимости с существующим кодом
@@ -50,18 +54,19 @@ const LearnPage = () => {
       setStats(JSON.parse(savedStats));
     }
     
-    // Получение имени пользователя из localStorage
-    const savedUser = localStorage.getItem('userName');
-    if (savedUser) {
-      setUserName(savedUser);
-    }
-    
     // Установка размера окна для конфетти
     setWindowSize({
       width: window.innerWidth,
       height: window.innerHeight
     });
-  }, []);
+
+    // T-LM-18: Автоматический запуск сессии для streak_hunter
+    if (currentMode === 'streak_hunter' && !sessionStarted && srCards.length > 0) {
+      setSessionStarted(true);
+      setIsFlipped(false);
+      setShowRating(false);
+    }
+  }, [currentMode, sessionStarted, srCards.length]);
 
   // Сохранение статистики в localStorage
   const saveStats = (newStats: StatsData) => {
@@ -130,11 +135,21 @@ const LearnPage = () => {
     setShowRating(false);
     setIsReadyForNext(false);
     setShowStats(false);
+    setSessionStarted(false);
+    setDailyChallengeAccepted(false);
   };
 
   const handleHome = () => {
     // Навигация на главную страницу
     window.location.href = '/';
+  };
+
+  // T-LM-18: Обработчик для принятия ежедневного вызова в режиме fighter
+  const handleAcceptDailyChallenge = () => {
+    setDailyChallengeAccepted(true);
+    setIsFlipped(false);
+    setShowRating(false);
+    console.log('Daily challenge accepted!');
   };
 
   // Вычисление процентов для круговой диаграммы
@@ -258,39 +273,56 @@ const LearnPage = () => {
           </div>
         </div>
       )}
-      
-      <div className="progress">
-        Карточка {currentCardIndex + 1} из {cards.length}
-      </div>
-      
-      <FlashCard
-        factorA={currentCard.factorA}
-        factorB={currentCard.factorB}
-        answer={currentCard.answer}
-        isFlipped={isFlipped}
-        onFlip={handleCardFlip}
-      />
 
-      {/* T-LM-17: Подсказка для режима zen */}
-      {currentMode === 'zen' && currentCard.hints_remaining !== undefined && currentCard.hints_remaining > 0 && (
-        <div className="zen-hint">
-          💡 Подсказок осталось: {currentCard.hints_remaining}
-        </div>
-      )}
-
-      {showRating && (
-        <div className="rating-section">
-          <p>Насколько хорошо вы знали ответ?</p>
-          <SRRatingButtons onRate={handleRate} />
-        </div>
-      )}
-
-      {isReadyForNext && (
-        <div className="ready-for-next-section">
-          <button className="next-card-button" onClick={handleNextCard}>
-            Далее ➡️
+      {/* T-LM-18: Кнопка принятия вызова для режима fighter */}
+      {currentMode === 'fighter' && !dailyChallengeAccepted && (
+        <div className="daily-challenge-section">
+          <h2>🏆 Ежедневный вызов</h2>
+          <p>Готов принять вызов дня?</p>
+          <button className="accept-challenge-btn" onClick={handleAcceptDailyChallenge}>
+            ⚔️ Принять вызов дня
           </button>
         </div>
+      )}
+      
+      {/* Показываем прогресс и карточку только если не в режиме ожидания fighter */}
+      {(currentMode !== 'fighter' || dailyChallengeAccepted) && (
+        <>
+          <div className="progress">
+            Карточка {currentCardIndex + 1} из {cards.length}
+          </div>
+          
+          <FlashCard
+            factorA={currentCard.factorA}
+            factorB={currentCard.factorB}
+            answer={currentCard.answer}
+            isFlipped={isFlipped}
+            onFlip={handleCardFlip}
+            mode={currentMode === 'zen' ? 'zen' : 'classic'}
+          />
+
+          {/* T-LM-17: Подсказка для режима zen */}
+          {currentMode === 'zen' && currentCard.hints_remaining !== undefined && currentCard.hints_remaining > 0 && (
+            <div className="zen-hint">
+              💡 Подсказок осталось: {currentCard.hints_remaining}
+            </div>
+          )}
+
+          {showRating && (
+            <div className="rating-section">
+              <p>Насколько хорошо вы знали ответ?</p>
+              <SRRatingButtons onRate={handleRate} />
+            </div>
+          )}
+
+          {isReadyForNext && (
+            <div className="ready-for-next-section">
+              <button className="next-card-button" onClick={handleNextCard}>
+                Далее ➡️
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
