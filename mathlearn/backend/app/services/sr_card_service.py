@@ -124,16 +124,22 @@ class SRCardService:
 
         return False, None
 
-    async def decrement_hint(self, card: SRCard) -> int:
+    async def decrement_hint(self, card: SRCard, mode: str = "classic") -> int:
         """
-        Уменьшить количество подсказок для карточки (режим zen).
+        Уменьшить количество подсказок для карточки.
+        В режиме Zen подсказки бесконечные и не расходуются.
 
         Args:
             card: Карточка.
+            mode: Режим обучения.
 
         Returns:
             Оставшееся количество подсказок.
         """
+        # В режиме Zen подсказки бесконечные
+        if mode == "zen":
+            return card.hints_remaining
+        
         if card.hints_remaining > 0:
             card.hints_remaining -= 1
             await self.db.commit()

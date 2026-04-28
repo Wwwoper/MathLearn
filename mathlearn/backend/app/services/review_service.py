@@ -62,6 +62,10 @@ class ReviewService:
                 # В режиме спринтер просроченный ответ считается неверным
                 is_correct = False
                 result["is_correct"] = False
+        # В режиме Zen таймеры игнорируются, timeout никогда не срабатывает
+        elif mode == "zen":
+            # Таймеры отключены, ответ всегда принимается независимо от времени
+            pass
         
         if is_correct:
             result["streak_maintained"] = True
@@ -78,10 +82,15 @@ class ReviewService:
                 total_xp += speed_bonus
             
             # Применение множителя XP от серии побед (streak)
+            # В режиме Zen серия не прерывается при ошибке, но множитель применяется всегда
             streak_multiplier = user.xp_multiplier if hasattr(user, 'xp_multiplier') else 1.0
             total_xp = int(total_xp * streak_multiplier)
             
             result["xp_gained"] = total_xp
+        else:
+            # В режиме Zen серия побед не прерывается при ошибке
+            if mode == "zen":
+                result["streak_maintained"] = True
         
         return result
 
