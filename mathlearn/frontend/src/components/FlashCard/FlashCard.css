@@ -130,3 +130,106 @@
   font-weight: bold;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
+
+/* T-LM-18: Стили для режима zen */
+.flashcard-container.zen-mode {
+  max-width: 500px;
+}
+
+.flashcard-container.zen-mode .flashcard {
+  height: auto;
+  cursor: default;
+  transform: none !important;
+}
+
+.flashcard-container.zen-mode .flashcard-face {
+  position: relative;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 2rem;
+}
+
+.zen-input-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 12px;
+}
+
+.zen-answer-input {
+  width: 100px;
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+  border: 3px solid #667eea;
+  border-radius: 12px;
+  padding: 0.5rem;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.zen-answer-input:focus {
+  border-color: #764ba2;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+}
+
+.zen-submit-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  width: 50px;
+  height: 50px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.zen-submit-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.zen-submit-btn:active {
+  transform: scale(0.95);
+}
+
+.zen-result {
+  min-width: 120px;
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-left: 12px;
+}
+
+.zen-result.correct {
+  color: #4CAF50;
+}
+
+.zen-result.incorrect {
+  color: #F44336;
+}
+
+.zen-next-btn {
+  margin-top: 2rem;
+  background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.3rem;
+  font-weight: bold;
+  border-radius: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.zen-next-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(255, 65, 108, 0.6);
+}
+
+.zen-next-btn:active {
+  transform: scale(0.95);
+}
