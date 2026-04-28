@@ -2,14 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { FlashCard } from '../components/FlashCard';
 import SRRatingButtons from '../components/SRRatingButtons';
 import Confetti from 'react-confetti';
+import { useAuthStore } from '../store/useAuthStore';
+import { useSRQueue } from '../hooks/useSRQueue';
 import './LearnPage.css';
-
-interface CardData {
-  factorA: number;
-  factorB: number;
-  answer: number;
-  id: number;
-}
 
 interface StatsData {
   excellent: number;
@@ -28,15 +23,25 @@ const LearnPage = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const [userName, setUserName] = useState<string>('');
-
-  // Demo data - в реальном приложении будет загружаться из бэкенда
-  const cards: CardData[] = [
-    { id: 1, factorA: 2, factorB: 3, answer: 6 },
-    { id: 2, factorA: 4, factorB: 5, answer: 20 },
-    { id: 3, factorA: 6, factorB: 7, answer: 42 },
-    { id: 4, factorA: 8, factorB: 9, answer: 72 },
-    { id: 5, factorA: 3, factorB: 7, answer: 21 },
-  ];
+  
+  // Получаем текущий режим обучения из store
+  const { user } = useAuthStore();
+  const currentMode = user?.learning_mode || 'classic';
+  
+  // Используем хук useSRQueue для получения очереди карточек (T-LM-17)
+  const { cards: srCards, isLoading, progress, refreshQueue } = useSRQueue({
+    mode: currentMode,
+    limit: 20,
+  });
+  
+  // Преобразуем SRCard в формат для совместимости с существующим кодом
+  const cards = srCards.map(card => ({
+    id: card.id,
+    factorA: card.factor_a,
+    factorB: card.factor_b,
+    answer: card.answer,
+    hints_remaining: card.hints_remaining,
+  }));
 
   // Загрузка статистики из localStorage при монтировании
   useEffect(() => {
@@ -138,6 +143,17 @@ const LearnPage = () => {
   const goodPercent = totalCards > 0 ? ((stats.excellent + stats.good) / totalCards) * 100 : 0;
   const hardPercent = totalCards > 0 ? ((stats.excellent + stats.good + stats.hard) / totalCards) * 100 : 0;
 
+  // Экран загрузки
+  if (isLoading) {
+    return (
+      <div className="learn-page">
+        <div className="loading-screen">
+          <h2>Загрузка карточек...</h2>
+        </div>
+      </div>
+    );
+  }
+
   // Экран статистики
   if (showStats) {
     return (
@@ -193,6 +209,21 @@ const LearnPage = () => {
     );
   }
 
+  // Если карточки не загружены
+  if (cards.length === 0) {
+    return (
+      <div className="learn-page">
+        <div className="empty-queue">
+          <h2>📭 Нет карточек для изучения</h2>
+          <p>Вы прошли все доступные карточки в этом режиме!</p>
+          <button className="stats-btn home" onClick={handleHome}>
+            🏠 На главную
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const currentCard = cards[currentCardIndex];
 
   return (
@@ -208,6 +239,26 @@ const LearnPage = () => {
       )}
       
       <h1>Учим таблицу умножения</h1>
+      
+      {/* T-LM-17: Прогресс-бар разблокировки для режима classic */}
+      {currentMode === 'classic' && progress && (
+        <div className="unlock-progress">
+          <div className="progress-info">
+            <span>Таблица ×{progress.current_table}</span>
+            <span>→ ×{progress.next_table}</span>
+          </div>
+          <div className="progress-bar">
+            <div 
+              className="progress-fill" 
+              style={{ width: `${progress.unlock_progress}%` }}
+            />
+          </div>
+          <div className="progress-details">
+            Средний EF: {progress.avg_ease_factor.toFixed(2)} / 2.0
+          </div>
+        </div>
+      )}
+      
       <div className="progress">
         Карточка {currentCardIndex + 1} из {cards.length}
       </div>
@@ -219,6 +270,13 @@ const LearnPage = () => {
         isFlipped={isFlipped}
         onFlip={handleCardFlip}
       />
+
+      {/* T-LM-17: Подсказка для режима zen */}
+      {currentMode === 'zen' && currentCard.hints_remaining !== undefined && currentCard.hints_remaining > 0 && (
+        <div className="zen-hint">
+          💡 Подсказок осталось: {currentCard.hints_remaining}
+        </div>
+      )}
 
       {showRating && (
         <div className="rating-section">
