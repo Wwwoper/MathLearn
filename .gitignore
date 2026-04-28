@@ -1,1 +1,297 @@
-Nothing to output - the change list contains only a source code file (.tsx) which should not be ignored.
+```
+# Dependencies
+node_modules/
+
+# Build artifacts
+dist/
+build/
+*.js.map
+*.css.map
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.DS_Store
+Thumbs.db
+
+# Compiled and binary files
+*.exe
+*.dll
+*.so
+*.dylib
+*.o
+*.obj
+*.a
+*.lib
+*.out
+
+# Compression
+*.zip
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
+*.lz4
+*.lzh
+*.cab
+*.arj
+*.rpm
+*.deb
+*.Z
+*.lz
+*.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst
+
+# Testing
+coverage/
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.hypothesis/
+
+# Gradle
+.gradle/
+build/
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.prof
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+replay_pid*
+
+# C/C++
+*.i
+*.s
+*.su
+*.gcda
+*.gcno
+*.gcov
+*.lcov
+*.stackdump
+
+# Ruby
+*.gem
+*.rbc
+.bundle/
+vendor/bundle/
+.ruby-version
+.rbenv-vars
+*.sqlite3
+.rdoc-cache
+
+# Node
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+node_modules/
+jspm_packages/
+
+# Bower
+bower_components/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask
+instance/
+.webassets-cache
+
+# Jekyll
+_site/
+.jekyll-metadata
+
+# Sass
+.sass-cache/
+
+# Code coverage
+coverage/
+*.lcov
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Sublime Text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+.swo
+.swp
+
+# IntelliJ IDEA
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Eclipse
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+# Visual Studio
+.vs/
+*.VC.db
+*.VC.VC.opendb
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+ipch/
+obj/
+*.VC.VC.opendb
+*.VC.db
+[BS]in/
+[Tt]emp/
+[Tt]emporary[Tt]est[Cc]onnection.ismn
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]uild/
+[Bb]inaries/
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Icon?
+desktop.ini
+
+# Linux
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Python
+*.py[cod]
+*$py.class
+*$pyc
+*$pyo
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.DS_Store
+Thumbs.db
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# nyc test coverage
+.nyc_output
+
+# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
+.grunt
+
+# Bower dependency directory (https://bower.io/)
+bower_components/
+
+# node-waf configuration
+.lock-wscript
+
+# Compiled binary addons (https://github.com/nodejs/node-gyp)
+build/Release
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Typescript output
+*.tsbuildinfo
+*.tsx
+
+# System Files
+.DS_Store
+Thumbs.db
+```

@@ -1,13 +1,67 @@
 import React, { useState, useEffect } from 'react';
 import { profileApi, type UserProfile, type ModeConfig } from '../api/profile';
 import LearningModeSelector, { type LearningMode } from '../components/LearningModeSelector';
+import ModeCard, { type ModeInfo } from '../components/ModeCard';
 import './ProfilePage.css';
+
+const MODES: ModeInfo[] = [
+  {
+    mode: 'classic',
+    title: 'Классический',
+    description: 'Изучение таблиц умножения по порядку с прогрессом',
+    icon: '🗺️',
+    is_pro: false,
+    primary_metric: 'Прогресс групп'
+  },
+  {
+    mode: 'sprinter',
+    title: 'Спринтер',
+    description: 'Быстрые сессии на скорость реакции',
+    icon: '⚡',
+    is_pro: false,
+    primary_metric: 'Среднее время ответа'
+  },
+  {
+    mode: 'weak_spots',
+    title: 'Работа над ошибками',
+    description: 'Тренировка слабых мест и проблемных примеров',
+    icon: '🧠',
+    is_pro: false,
+    primary_metric: 'Уменьшение ошибок'
+  },
+  {
+    mode: 'streak_hunter',
+    title: 'Охотник за сериями',
+    description: 'Поддержание ежедневной серии побед',
+    icon: '🔥',
+    is_pro: false,
+    primary_metric: 'Текущая серия'
+  },
+  {
+    mode: 'fighter',
+    title: 'Боец',
+    description: 'Ежедневные вызовы и лидерборды',
+    icon: '🎮',
+    is_pro: true,
+    primary_metric: 'Очки рейтинга'
+  },
+  {
+    mode: 'zen',
+    title: 'Дзен',
+    description: 'Спокойное обучение без таймера и давления',
+    icon: '🌙',
+    is_pro: true,
+    primary_metric: 'Точность'
+  }
+];
 
 const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [modeConfig, setModeConfig] = useState<ModeConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [showModeSelector, setShowModeSelector] = useState(false);
+  const [pendingMode, setPendingMode] = useState<string | null>(null);
+  const [showWarning, setShowWarning] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -29,16 +83,34 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  const handleModeSelect = async (mode: LearningMode) => {
+  const handleModeClick = (mode: string) => {
+    if (mode !== modeConfig?.mode) {
+      setPendingMode(mode);
+      setShowWarning(true);
+    }
+  };
+
+  const confirmModeChange = async () => {
+    if (!pendingMode) return;
+    
     try {
-      const data = await profileApi.updateMode(mode);
+      const data = await profileApi.updateMode(pendingMode as LearningMode);
       setProfile(data.profile);
       setModeConfig(data.mode_config);
       setShowModeSelector(false);
+      setShowWarning(false);
+      setPendingMode(null);
     } catch (err) {
       console.error('Failed to update mode:', err);
       setError('Не удалось изменить режим обучения. Попробуйте позже.');
+      setShowWarning(false);
+      setPendingMode(null);
     }
+  };
+
+  const cancelModeChange = () => {
+    setShowWarning(false);
+    setPendingMode(null);
   };
 
   if (loading) {
@@ -122,10 +194,31 @@ const ProfilePage: React.FC = () => {
         <div className="mode-selector-overlay">
           <div className="mode-selector-modal">
             <button className="close-btn" onClick={() => setShowModeSelector(false)}>✕</button>
-            <LearningModeSelector 
-              onSelect={handleModeSelect}
-              currentMode={modeConfig.mode as LearningMode}
-            />
+            <h2>Выберите режим обучения</h2>
+            <div className="modes-grid">
+              {MODES.map((mode) => (
+                <ModeCard
+                  key={mode.mode}
+                  mode={mode}
+                  selected={modeConfig?.mode === mode.mode}
+                  onSelect={handleModeClick}
+                  isProUser={profile?.is_pro ?? false}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showWarning && (
+        <div className="warning-overlay">
+          <div className="warning-modal">
+            <h3>⚠️ Внимание</h3>
+            <p>Некоторые настройки сессии будут сброшены</p>
+            <div className="warning-actions">
+              <button className="btn-cancel" onClick={cancelModeChange}>Отмена</button>
+              <button className="btn-confirm" onClick={confirmModeChange}>Продолжить</button>
+            </div>
           </div>
         </div>
       )}
