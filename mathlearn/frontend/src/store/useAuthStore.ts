@@ -1,9 +1,11 @@
 import { create } from 'zustand';
+import type { LearningMode } from '../components/LearningModeSelector/LearningModeSelector';
 
 interface User {
   id: number;
   email: string;
   name: string;
+  learning_mode?: LearningMode;
 }
 
 interface AuthState {
@@ -12,6 +14,7 @@ interface AuthState {
   setUser: (user: User) => void;
   setToken: (token: string) => void;
   logout: () => void;
+  updateUserLearningMode: (mode: LearningMode) => void;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -30,5 +33,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     console.log('Logging out');
     localStorage.removeItem('access_token');
     set({ user: null, token: null });
+  },
+  updateUserLearningMode: (mode: LearningMode) => {
+    const currentUser = get().user;
+    if (currentUser) {
+      set({ user: { ...currentUser, learning_mode: mode } });
+    }
   },
 }));
