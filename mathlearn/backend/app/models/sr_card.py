@@ -1,7 +1,7 @@
 """Модель карточки интервального повторения (SR)."""
 
 from datetime import datetime
-from sqlalchemy import Integer, Float, DateTime, ForeignKey
+from sqlalchemy import Integer, Float, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
@@ -22,6 +22,8 @@ class SRCard(Base):
     next_review_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     repetitions: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     lapses: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    locked: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    hints_remaining: Mapped[int] = mapped_column(Integer, default=3, nullable=False)
 
     # Связи
     user: Mapped["User"] = relationship("User", back_populates="sr_cards")
