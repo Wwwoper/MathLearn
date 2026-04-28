@@ -11,6 +11,7 @@ from sqlalchemy.orm import selectinload
 
 from app.models.drill_session import DrillSession
 from app.models.sr_card import SRCard
+from app.services.mode_config import get_mode_config
 
 
 @dataclass
@@ -46,6 +47,7 @@ async def start_session(
     tables: list[int],
     limit: int,
     time_limit_sec: Optional[int] = None,
+    mode: str = "classic",
 ) -> tuple[DrillSession, Question]:
     """
     Начать новую drill-сессию.
@@ -56,10 +58,14 @@ async def start_session(
         tables: Список таблиц умножения для тренировки (например, [2, 3, 4]).
         limit: Количество вопросов в сессии.
         time_limit_sec: Ограничение по времени в секундах (опционально).
+        mode: Режим обучения (classic, sprinter, weak_spots, streak_hunter, fighter, zen).
 
     Returns:
         Кортеж (DrillSession, первый вопрос).
     """
+    # Получение конфигурации режима
+    mode_config = get_mode_config(mode)
+    
     # Генерация пула вопросов из выбранных таблиц
     question_pool = []
     for a in tables:
@@ -71,6 +77,16 @@ async def start_session(
                 correct_answer=a * b,
             ))
 
+    # Фильтрация вопросов согласно режиму обучения
+    if mode == "weak_spots":
+        # Для режима weak_spots выбираем только карточки с низким уровнем уверенности
+        # Это будет реализовано через SRCardService в роутере
+        pass
+    elif mode == "fighter":
+        # Для режима Fighter применяем ограничение по времени
+        if time_limit_sec is None:
+            time_limit_sec = mode_config.get("time_limit_sec", 60)
+    
     # Случайный выбор limit вопросов из пула
     if len(question_pool) > limit:
         selected_questions = random.sample(question_pool, limit)
@@ -86,6 +102,8 @@ async def start_session(
         total_questions=limit,
         correct_answers=0,
         avg_response_ms=0,
+        mode=mode,
+        time_limit_sec=time_limit_sec,
     )
     db.add(session)
     await db.commit()
