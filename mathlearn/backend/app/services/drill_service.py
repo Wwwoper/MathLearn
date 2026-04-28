@@ -3,7 +3,7 @@
 import random
 from datetime import datetime
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, List
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -41,6 +41,47 @@ class DrillSessionState:
 _active_sessions: dict[int, DrillSessionState] = {}
 
 
+async def _get_weak_tables_for_user(db: AsyncSession, user_id: int, threshold: float = 1.5) -> List[int]:
+    """
+    Получить список таблиц, где у пользователя есть карточки с ease_factor ниже порога.
+    
+    Args:
+        db: Сессия базы данных.
+        user_id: ID пользователя.
+        threshold: Порог ease_factor (по умолчанию 1.5).
+    
+    Returns:
+        Список таблиц (factor_b) с проблемными карточками.
+    """
+    result = await db.execute(
+        select(SRCard.factor_b)
+        .where(SRCard.user_id == user_id)
+        .where(SRCard.ease_factor < threshold)
+        .distinct()
+    )
+    return [row[0] for row in result.all()]
+
+
+async def _get_unlocked_tables_for_user(db: AsyncSession, user_id: int) -> List[int]:
+    """
+    Получить список разблокированных таблиц для режима classic.
+    
+    Args:
+        db: Сессия базы данных.
+        user_id: ID пользователя.
+    
+    Returns:
+        Список разблокированных таблиц (factor_b).
+    """
+    result = await db.execute(
+        select(SRCard.factor_b)
+        .where(SRCard.user_id == user_id)
+        .where(SRCard.locked == False)
+        .distinct()
+    )
+    return [row[0] for row in result.all()]
+
+
 async def start_session(
     db: AsyncSession,
     user_id: int,
@@ -66,9 +107,35 @@ async def start_session(
     # Получение конфигурации режима
     mode_config = get_mode_config(mode)
     
-    # Генерация пула вопросов из выбранных таблиц
+    # Фильтрация таблиц согласно режиму обучения
+    filtered_tables = tables
+    
+    if mode == "weak_spots":
+        # Для режима weak_spots выбираем только таблицы с карточками, где ease_factor < 1.5
+        weak_tables = await _get_weak_tables_for_user(db, user_id, threshold=1.5)
+        if weak_tables:
+            # Пересекаем запрошенные таблицы с проблемными
+            filtered_tables = [t for t in tables if t in weak_tables]
+            # Если после фильтрации не осталось таблиц, берём все проблемные
+            if not filtered_tables:
+                filtered_tables = weak_tables[:len(tables)]
+    
+    elif mode == "classic":
+        # Для режима classic — только разблокированные таблицы
+        unlocked_tables = await _get_unlocked_tables_for_user(db, user_id)
+        filtered_tables = [t for t in tables if t in unlocked_tables]
+        # Если все таблицы заблокированы, разрешаем хотя бы первую доступную
+        if not filtered_tables and unlocked_tables:
+            filtered_tables = unlocked_tables[:1]
+    
+    elif mode == "fighter":
+        # Для режима Fighter применяем ограничение по времени
+        if time_limit_sec is None:
+            time_limit_sec = mode_config.get("time_limit_sec", 60)
+    
+    # Генерация пула вопросов из отфильтрованных таблиц
     question_pool = []
-    for a in tables:
+    for a in filtered_tables:
         for b in range(1, 11):
             question_pool.append(Question(
                 question_id=len(question_pool),
@@ -76,16 +143,6 @@ async def start_session(
                 factor_b=b,
                 correct_answer=a * b,
             ))
-
-    # Фильтрация вопросов согласно режиму обучения
-    if mode == "weak_spots":
-        # Для режима weak_spots выбираем только карточки с низким уровнем уверенности
-        # Это будет реализовано через SRCardService в роутере
-        pass
-    elif mode == "fighter":
-        # Для режима Fighter применяем ограничение по времени
-        if time_limit_sec is None:
-            time_limit_sec = mode_config.get("time_limit_sec", 60)
     
     # Случайный выбор limit вопросов из пула
     if len(question_pool) > limit:
