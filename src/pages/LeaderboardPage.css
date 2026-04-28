@@ -1,0 +1,369 @@
+.leaderboard-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.leaderboard-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.leaderboard-header h1 {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+}
+
+.period-switcher {
+  display: inline-flex;
+  background: #f0f2f5;
+  border-radius: 30px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.period-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: transparent;
+  color: #666;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 26px;
+  transition: all 0.3s ease;
+}
+
+.period-btn.active {
+  background: #fff;
+  color: #e74c3c;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.period-btn:hover:not(.active) {
+  color: #333;
+}
+
+/* Access Denied Styles */
+.leaderboard-access-denied {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 2rem;
+}
+
+.access-denied-content {
+  text-align: center;
+  max-width: 500px;
+  background: #fff;
+  padding: 3rem 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.access-denied-content h1 {
+  font-size: 2rem;
+  color: #e74c3c;
+  margin-bottom: 1rem;
+}
+
+.access-denied-content p {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.mode-preview {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.feature-badge {
+  background: #f8f9fa;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: #555;
+  border: 1px solid #eee;
+}
+
+.switch-mode-btn {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+}
+
+.switch-mode-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+}
+
+/* Leaderboard Table */
+.leaderboard-content {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.loading-state {
+  padding: 3rem;
+  text-align: center;
+  color: #999;
+  font-size: 1.1rem;
+}
+
+.leaderboard-table-wrapper {
+  overflow-x: auto;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.leaderboard-table th {
+  background: #f8f9fa;
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #555;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #eee;
+}
+
+.col-rank { width: 60px; text-align: center; }
+.col-player { width: auto; }
+.col-badges { width: 120px; text-align: center; }
+.col-points { width: 120px; text-align: right; }
+
+.leaderboard-row {
+  transition: background-color 0.2s;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.leaderboard-row:last-child {
+  border-bottom: none;
+}
+
+.leaderboard-row:hover {
+  background-color: #fafafa;
+}
+
+.current-user-row {
+  background-color: #fff3cd !important;
+  position: relative;
+}
+
+.current-user-row::after {
+  content: 'Вы';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #ffc107;
+  color: #333;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.top-1 .col-rank, .top-2 .col-rank, .top-3 .col-rank {
+  background: linear-gradient(to bottom, #fff9e6, #fff);
+}
+
+.rank-medal {
+  font-size: 1.5rem;
+  display: block;
+}
+
+.rank-number {
+  font-weight: 600;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.player-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #eee;
+}
+
+.player-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 1.05rem;
+}
+
+.badges-list {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.badge-item {
+  font-size: 1.3rem;
+  background: #f0f2f5;
+  padding: 0.25rem;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.no-badges {
+  color: #ccc;
+  font-style: italic;
+}
+
+.points-value {
+  font-weight: 700;
+  color: #2c3e50;
+  font-size: 1.1rem;
+  font-family: 'Courier New', monospace;
+}
+
+.leaderboard-footer {
+  text-align: center;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  color: #888;
+  font-size: 0.9rem;
+  border-top: 1px solid #eee;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .leaderboard-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .period-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .player-info {
+    gap: 0.75rem;
+  }
+
+  .player-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .col-badges {
+    width: 100px;
+  }
+
+  .badge-item {
+    width: 28px;
+    height: 28px;
+    font-size: 1.1rem;
+  }
+
+  .current-user-row::after {
+    display: none;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .leaderboard-page {
+    color: #ecf0f1;
+  }
+
+  .leaderboard-header h1 {
+    color: #ecf0f1;
+  }
+
+  .period-switcher {
+    background: #2c3e50;
+  }
+
+  .period-btn {
+    color: #aaa;
+  }
+
+  .period-btn.active {
+    background: #34495e;
+    color: #e74c3c;
+  }
+
+  .leaderboard-content {
+    background: #2c3e50;
+  }
+
+  .leaderboard-table th {
+    background: #34495e;
+    color: #ecf0f1;
+    border-bottom-color: #4a6278;
+  }
+
+  .leaderboard-row {
+    border-bottom-color: #3e5368;
+  }
+
+  .leaderboard-row:hover {
+    background-color: #34495e;
+  }
+
+  .current-user-row {
+    background-color: #3e3a28 !important;
+  }
+
+  .current-user-row::after {
+    background: #d4a017;
+    color: #fff;
+  }
+
+  .player-name {
+    color: #ecf0f1;
+  }
+
+  .points-value {
+    color: #ecf0f1;
+  }
+
+  .leaderboard-footer {
+    background: #34495e;
+    color: #aaa;
+    border-top-color: #4a6278;
+  }
+
+  .access-denied-content {
+    background: #2c3e50;
+  }
+
+  .feature-badge {
+    background: #34495e;
+    color: #ecf0f1;
+    border-color: #4a6278;
+  }
+}
