@@ -1,22 +1,32 @@
 ```
-# Compiled Python files
-*.pyc
-__pycache__/
+# Database migrations
+alembic/versions/*.py
 
-# Virtual environments
-venv/
-.venv/
+# Environment variables
 .env
 .env.local
 *.env.*
 
+# Dependencies
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
 # Logs
 *.log
 
-# Coverage reports
-.coverage
-coverage/
-htmlcov/
+# OS generated files
+.DS_Store
+Thumbs.db
 
 # IDE specific
 .vscode/
@@ -25,22 +35,17 @@ htmlcov/
 *.swo
 *.tmp
 
-# Build artifacts
-build/
-dist/
-target/
-*.class
-*.o
-*.obj
-*.out
+# Coverage reports
+coverage/
+htmlcov/
+.coverage
 
-# Dependencies
-node_modules/
-.mypy_cache/
-.pytest_cache/
-.gradle/
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
 
-# System files
-.DS_Store
-Thumbs.db
+# Alembic
+alembic/env.py
+alembic/versions/
 ```
