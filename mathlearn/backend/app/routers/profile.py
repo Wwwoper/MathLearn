@@ -7,7 +7,7 @@ from app.core.database import get_async_session
 from app.core.deps import get_current_user
 from app.models.user import User
 from app.schemas.user import UserResponse, LearningModeUpdateRequest
-from app.services.mode_config import ModeConfigService
+from app.services.mode_config import get_mode_config, is_mode_valid
 
 router = APIRouter(prefix="/profile", tags=["Профиль и режимы обучения"])
 
@@ -18,7 +18,7 @@ async def get_learning_mode(current_user: User = Depends(get_current_user)):
     return {
         "mode": current_user.learning_mode,
         "xp_multiplier": current_user.xp_multiplier,
-        "config": ModeConfigService.get_mode_config(current_user.learning_mode)
+        "config": get_mode_config(current_user.learning_mode)
     }
 
 
@@ -30,7 +30,7 @@ async def set_learning_mode(
 ):
     """Установка режима обучения пользователя."""
     # Проверка валидности режима
-    if not ModeConfigService.is_mode_valid(mode_data.mode):
+    if not is_mode_valid(mode_data.mode):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Неверный режим обучения. Доступные режимы: classic, sprinter, weak_spots, streak_hunter, fighter, zen"
