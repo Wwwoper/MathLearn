@@ -15,8 +15,13 @@ node_modules/
 .vscode/
 .idea/
 
-# Build outputs
-dist/
-build/
-target/
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+.env
 ```
