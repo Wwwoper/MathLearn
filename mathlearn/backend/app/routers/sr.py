@@ -75,9 +75,10 @@ async def submit_review(
     if review_data.rating < 2:
         card.lapses += 1
     else:
-        # Уменьшение подсказок в режиме zen при успешном ответе
-        if current_user.learning_mode == "zen" and card.hints_remaining > 0:
-            await sr_service.decrement_hint(card)
+        # Уменьшение подсказок только если режим НЕ zen
+        # В режиме zen подсказки бесконечные и не расходуются
+        if current_user.learning_mode != "zen" and card.hints_remaining > 0:
+            await sr_service.decrement_hint(card, mode=current_user.learning_mode)
     
     # Сохранение отзыва
     review = SRReview(
