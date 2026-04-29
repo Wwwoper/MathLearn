@@ -1,7 +1,7 @@
 """add locked and hints_remaining to sr_cards
 
 Revision ID: abc123456789
-Revises: a04a68b9db83
+Revises: 002
 Create Date: 2026-04-29 11:00:00.000000
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = "abc123456789"
-down_revision: Union[str, Sequence[str], None] = "a04a68b9db83"
+down_revision: Union[str, Sequence[str], None] = "002"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
