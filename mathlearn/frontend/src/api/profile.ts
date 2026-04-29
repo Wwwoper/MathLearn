@@ -29,17 +29,17 @@ export interface ProfileResponse {
 
 export const profileApi = {
   getProfile: async (): Promise<ProfileResponse> => {
-    const response = await apiClient.get('/api/profile/');
+    const response = await apiClient.get('/profile/');
     return response.data;
   },
 
   updateMode: async (mode: LearningMode): Promise<ProfileResponse> => {
-    const response = await apiClient.post('/api/profile/mode', { learning_mode: mode });
+    const response = await apiClient.post('/profile/mode', { learning_mode: mode });
     return response.data;
   },
 
   getMode: async (): Promise<ModeConfig> => {
-    const response = await apiClient.get('/api/profile/mode');
+    const response = await apiClient.get('/profile/mode');
     return response.data;
   },
 };
