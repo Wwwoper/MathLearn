@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { profileApi, type UserProfile, type ModeConfig } from '../api/profile';
-import LearningModeSelector, { type LearningMode } from '../components/LearningModeSelector';
+import { type LearningMode } from '../components/LearningModeSelector/LearningModeSelector';
 import ModeCard, { type ModeInfo } from '../components/ModeCard';
 import './ProfilePage.css';
 

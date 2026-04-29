@@ -23,9 +23,6 @@ export interface QueueResponse {
   };
 }
 
-// Бэкенд возвращает просто массив карточек, а не объект { cards: ... }
-type QueueResponseArray = SRCard[];
-
 interface UseSRQueueOptions {
   mode: LearningMode;
   tableId?: number;

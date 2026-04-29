@@ -10,6 +10,7 @@ export interface UserProfile {
   streak_freeze_count: number;
   current_streak: number;
   best_streak: number;
+  is_pro?: boolean;
 }
 
 export interface ModeConfig {

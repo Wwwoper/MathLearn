@@ -4,7 +4,7 @@ import { statsApi } from '../api/stats';
 import apiClient from '../api/client';
 import { profileApi } from '../api/profile';
 import { useAuthStore } from '../store/useAuthStore';
-import type { LearningMode } from '../components/LearningModeSelector/LearningModeSelector';
+import LearningModeSelector, { type LearningMode } from '../components/LearningModeSelector/LearningModeSelector';
 import './HomePage.css';
 
 interface SRProgress {
@@ -71,6 +71,7 @@ const HomePage = () => {
   const [streakHunterProgress, setStreakHunterProgress] = useState<StreakHunterProgress | null>(null);
   const [fighterChallenge, setFighterChallenge] = useState<FighterChallenge | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showModeSelector, setShowModeSelector] = useState(false);
 
   useEffect(() => {
     const fetchHomeData = async () => {
@@ -122,6 +123,17 @@ const HomePage = () => {
 
     fetchHomeData();
   }, []);
+
+  const handleModeSelect = async (mode: LearningMode) => {
+    try {
+      await profileApi.updateMode(mode);
+      setLearningMode(mode);
+      setShowModeSelector(false);
+      await fetchModeSpecificData(mode);
+    } catch (error) {
+      console.error('Failed to update mode:', error);
+    }
+  };
 
   const fetchModeSpecificData = async (mode: LearningMode) => {
     try {
@@ -338,6 +350,16 @@ const HomePage = () => {
         </Link>
       </div>
 
+      {/* Кнопка выбора режима обучения */}
+      <div className="home-section">
+        <button 
+          className="start-button mode-selector-btn"
+          onClick={() => setShowModeSelector(true)}
+        >
+          🎯 Выбрать режим обучения
+        </button>
+      </div>
+
       {/* Streak Counter с анимацией */}
       <div className="home-section">
         <div className="streak-counter">
@@ -349,8 +371,29 @@ const HomePage = () => {
         </div>
       </div>
 
+      {/* Текущий режим обучения */}
+      <div className="home-section">
+        <div className="current-mode-display">
+          <h2 className="card-title">Текущий режим: {getModeTitle(learningMode)}</h2>
+          <p className="mode-description">{getModeDescription(learningMode)}</p>
+        </div>
+      </div>
+
       {/* Виджеты в зависимости от режима обучения */}
       {renderModeSpecificWidgets()}
+
+      {/* Модальное окно выбора режима */}
+      {showModeSelector && (
+        <div className="mode-selector-overlay">
+          <div className="mode-selector-modal">
+            <button className="close-btn" onClick={() => setShowModeSelector(false)}>✕</button>
+            <LearningModeSelector 
+              onSelect={handleModeSelect}
+              currentMode={learningMode}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Блок с рекомендацией от ИИ */}
       {aiRecommendation && (
@@ -391,5 +434,29 @@ const HomePage = () => {
     </div>
   );
 };
+
+function getModeTitle(mode: LearningMode): string {
+  const titles: Record<LearningMode, string> = {
+    classic: 'Классик 🗺️',
+    sprinter: 'Спринтер ⚡',
+    weak_spots: 'Анализ слабых мест 🧠',
+    streak_hunter: 'Стрик-Охотник 🔥',
+    fighter: 'Боец 🎮',
+    zen: 'Дзен 🌙'
+  };
+  return titles[mode];
+}
+
+function getModeDescription(mode: LearningMode): string {
+  const descriptions: Record<LearningMode, string> = {
+    classic: 'Шаг за шагом, без спешки',
+    sprinter: 'Мне важна скорость!',
+    weak_spots: 'Исправим ошибки',
+    streak_hunter: 'Каждый день по чуть-чуть',
+    fighter: 'Хочу соревноваться',
+    zen: 'Без давления и таймеров'
+  };
+  return descriptions[mode];
+}
 
 export default HomePage;
