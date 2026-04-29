@@ -11,11 +11,14 @@ class SRCardResponse(BaseModel):
     user_id: int
     factor_a: int
     factor_b: int
+    answer: int  # Вычисляемое поле для удобства фронтенда
     ease_factor: float
     interval_days: int
     next_review_at: datetime | None
     repetitions: int
     lapses: int
+    locked: bool = False
+    hints_remaining: int = 3
 
     class Config:
         from_attributes = True
@@ -25,7 +28,7 @@ class SRReviewRequest(BaseModel):
     """Схема запроса на отзыв о карточке."""
 
     card_id: int
-    rating: int = Field(..., ge=1, le=4)  # 1-4 (Не знал, Трудно, Знал, Легко)
+    rating: int = Field(..., ge=1, le=5)  # 1-5 (😠, 😕, 😐, 🙂, 🤩)
     response_time_ms: int = Field(..., ge=0)
 
 

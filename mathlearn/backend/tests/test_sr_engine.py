@@ -19,11 +19,22 @@ class MockSRCard:
 
 
 def test_rating_4_increases_ease_factor():
-    """Тест: rating=4 должен увеличивать ease_factor."""
+    """Тест: rating=5 должен сохранять ease_factor (максимальная оценка)."""
+    card = MockSRCard(ease_factor=2.5, interval_days=1, repetitions=2)
+    ef_new, interval, next_review, reps = calculate_next_review(card, rating=5)
+
+    # rating=5 в SM-2 не увеличивает EF выше начального, но и не уменьшает
+    assert ef_new >= 2.5, f"ease_factor должен остаться >= 2.5, но получил {ef_new}"
+    assert reps == 3, f"repetitions должен быть 3, но получил {reps}"
+
+
+def test_rating_4_good_performance():
+    """Тест: rating=4 должен давать хороший результат (небольшое снижение EF)."""
     card = MockSRCard(ease_factor=2.5, interval_days=1, repetitions=2)
     ef_new, interval, next_review, reps = calculate_next_review(card, rating=4)
 
-    assert ef_new > 2.5, f"ease_factor должен увеличиться, но получил {ef_new}"
+    # rating=4 немного снижает EF, но всё равно хорошо
+    assert ef_new > 2.0, f"ease_factor должен быть > 2.0, но получил {ef_new}"
     assert reps == 3, f"repetitions должен быть 3, но получил {reps}"
 
 

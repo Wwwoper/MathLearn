@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FlashCard } from '../components/FlashCard';
 import SRRatingButtons from '../components/SRRatingButtons';
 import Confetti from 'react-confetti';
 import { useAuthStore } from '../store/useAuthStore';
 import { useSRQueue } from '../hooks/useSRQueue';
+import apiClient from '../../api/client';
 import './LearnPage.css';
 
 interface StatsData {
@@ -14,6 +16,7 @@ interface StatsData {
 }
 
 const LearnPage = () => {
+  const navigate = useNavigate();
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showRating, setShowRating] = useState(false);
   const [isReadyForNext, setIsReadyForNext] = useState(false);
@@ -74,8 +77,21 @@ const LearnPage = () => {
     setStats(newStats);
   };
 
-  const handleRate = (rating: number) => {
+  const handleRate = async (rating: number) => {
     console.log(`Rated ${rating}`);
+    
+    // Отправляем рейтинг на сервер для обновления SM-2
+    const currentCard = cards[currentCardIndex];
+    try {
+      await apiClient.post('/sr/review', {
+        card_id: currentCard.id,
+        rating: rating,
+        response_time_ms: 0, // Можно добавить замер времени ответа
+      });
+      console.log('Review submitted successfully');
+    } catch (error) {
+      console.error('Failed to submit review:', error);
+    }
     
     // Обновление статистики на основе рейтинга
     const newStats = { ...stats };
@@ -140,8 +156,8 @@ const LearnPage = () => {
   };
 
   const handleHome = () => {
-    // Навигация на главную страницу
-    window.location.href = '/';
+    // Навигация на главную страницу с использованием navigate
+    navigate('/');
   };
 
   // T-LM-18: Обработчик для принятия ежедневного вызова в режиме fighter
