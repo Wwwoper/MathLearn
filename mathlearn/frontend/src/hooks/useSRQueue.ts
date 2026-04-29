@@ -23,6 +23,9 @@ export interface QueueResponse {
   };
 }
 
+// Бэкенд возвращает просто массив карточек, а не объект { cards: ... }
+type QueueResponseArray = SRCard[];
+
 interface UseSRQueueOptions {
   mode: LearningMode;
   tableId?: number;
@@ -63,9 +66,10 @@ export const useSRQueue = ({ mode, tableId, limit = 20 }: UseSRQueueOptions): Us
         params.append('table_id', tableId.toString());
       }
       
-      const response = await apiClient.get<QueueResponse>(`/sr/queue?${params.toString()}`);
-      setCards(response.data.cards);
-      setProgress(response.data.progress || null);
+      // Бэкенд возвращает просто массив карточек, а не объект { cards: ... }
+      const response = await apiClient.get<SRCard[]>(`/sr/queue?${params.toString()}`);
+      setCards(response.data);
+      setProgress(null);
     } catch (err) {
       console.error('Failed to fetch SR queue:', err);
       setError(err instanceof Error ? err : new Error('Unknown error'));

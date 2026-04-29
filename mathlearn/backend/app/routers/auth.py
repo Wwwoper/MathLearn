@@ -32,6 +32,8 @@ async def create_initial_sr_cards(db: AsyncSession, user_id: int):
                 next_review_at=datetime.now(),  # Карточки доступны сразу
                 repetitions=0,
                 lapses=0,
+                locked=False,  # Явно указываем, что карточки разблокированы
+                hints_remaining=3,  # Устанавливаем начальное количество подсказок
             )
             cards.append(card)
     
