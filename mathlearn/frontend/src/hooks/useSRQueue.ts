@@ -63,7 +63,7 @@ export const useSRQueue = ({ mode, tableId, limit = 20 }: UseSRQueueOptions): Us
         params.append('table_id', tableId.toString());
       }
       
-      const response = await apiClient.get<QueueResponse>(`/api/sr/queue?${params.toString()}`);
+      const response = await apiClient.get<QueueResponse>(`/sr/queue?${params.toString()}`);
       setCards(response.data.cards);
       setProgress(response.data.progress || null);
     } catch (err) {
