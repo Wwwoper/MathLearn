@@ -35,7 +35,7 @@ export const profileApi = {
   },
 
   updateMode: async (mode: LearningMode): Promise<ProfileResponse> => {
-    const response = await apiClient.post('/profile/mode', { learning_mode: mode });
+    const response = await apiClient.post('/profile/mode', { mode });
     return response.data;
   },
 
