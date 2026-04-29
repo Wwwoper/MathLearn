@@ -34,6 +34,8 @@ def upgrade() -> None:
         sa.Column("current_streak", sa.Integer(), nullable=False),
         sa.Column("max_streak", sa.Integer(), nullable=False),
         sa.Column("learning_mode", sa.String(length=20), nullable=False, server_default="classic"),
+        sa.Column("xp_multiplier", sa.Float(), nullable=False, server_default="1.0"),
+        sa.Column("streak_freeze_count", sa.Integer(), nullable=False, server_default="0"),
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),
