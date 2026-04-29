@@ -117,7 +117,21 @@ async def submit_review(
     if current_user.learning_mode == "classic":
         unlocked, next_table = await sr_service.unlock_next_table(current_user, card.factor_b)
     
-    response = {"message": "Отзыв сохранён", "card": SRCardResponse.model_validate(card)}
+    # Возвращаем обновлённую карточку с вычисляемым полем answer
+    card_data = {
+        "id": card.id,
+        "factor_a": card.factor_a,
+        "factor_b": card.factor_b,
+        "answer": card.factor_a * card.factor_b,
+        "ease_factor": card.ease_factor,
+        "interval_days": card.interval_days,
+        "next_review_at": card.next_review_at,
+        "repetitions": card.repetitions,
+        "lapses": card.lapses,
+        "locked": card.locked,
+        "hints_remaining": card.hints_remaining,
+    }
+    response = {"message": "Отзыв сохранён", "card": SRCardResponse(**card_data)}
     if unlocked:
         response["unlocked_next_table"] = next_table
     
