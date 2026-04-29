@@ -5,7 +5,7 @@ import SRRatingButtons from '../components/SRRatingButtons';
 import Confetti from 'react-confetti';
 import { useAuthStore } from '../store/useAuthStore';
 import { useSRQueue } from '../hooks/useSRQueue';
-import apiClient from '../../api/client';
+import apiClient from '../api/client';
 import './LearnPage.css';
 
 interface StatsData {
