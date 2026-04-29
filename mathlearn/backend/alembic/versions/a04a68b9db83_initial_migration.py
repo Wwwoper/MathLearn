@@ -33,6 +33,7 @@ def upgrade() -> None:
         sa.Column("level", sa.Integer(), nullable=False),
         sa.Column("current_streak", sa.Integer(), nullable=False),
         sa.Column("max_streak", sa.Integer(), nullable=False),
+        sa.Column("learning_mode", sa.String(length=20), nullable=False, server_default="classic"),
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),
@@ -110,6 +111,8 @@ def upgrade() -> None:
         sa.Column("next_review_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("repetitions", sa.Integer(), nullable=False),
         sa.Column("lapses", sa.Integer(), nullable=False),
+        sa.Column("locked", sa.Boolean(), nullable=False, server_default="false"),
+        sa.Column("hints_remaining", sa.Integer(), nullable=False, server_default="3"),
         sa.ForeignKeyConstraint(
             ["user_id"],
             ["users.id"],
