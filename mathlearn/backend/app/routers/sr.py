@@ -233,3 +233,105 @@ async def get_today_stats(
         "due_count": due_count,
         "completed_today": completed_today,
     }
+
+
+@router.get("/streak-hunter-progress")
+async def get_streak_hunter_progress(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
+):
+    """Получить прогресс для режима Streak Hunter.
+    
+    Возвращает текущую сессию и цель.
+    Заглушка: всегда возвращает 0/10.
+    """
+    # TODO: Реализовать логику подсчёта текущей сессии
+    return {
+        "current_session": 0,
+        "session_target": 10,
+    }
+
+
+@router.get("/sprinter-stats")
+async def get_sprinter_stats(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
+):
+    """Получить статистику для режима Sprinter.
+    
+    Возвращает среднюю скорость ответа и статистику за 7 дней.
+    Заглушка: возвращает среднее время из последних отзывов.
+    """
+    # Получаем последние 50 отзывов для расчёта средней скорости
+    result = await db.execute(
+        select(SRReview)
+        .where(SRReview.user_id == current_user.id)
+        .order_by(SRReview.reviewed_at.desc())
+        .limit(50)
+    )
+    reviews = result.scalars().all()
+    
+    if not reviews:
+        return {
+            "avg_response_ms": 0,
+            "last_7_days": [],
+        }
+    
+    avg_response_ms = sum(r.response_time_ms for r in reviews) // len(reviews)
+    
+    # Группировка по дням (заглушка)
+    last_7_days = []
+    
+    return {
+        "avg_response_ms": avg_response_ms,
+        "last_7_days": last_7_days,
+    }
+
+
+@router.get("/weak-spots")
+async def get_weak_spots(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
+):
+    """Получить слабые места для режима Weak Spots.
+    
+    Возвращает факты с низким ease_factor.
+    """
+    # Находим карточки с низким ease_factor (< 2.0)
+    result = await db.execute(
+        select(SRCard)
+        .where(SRCard.user_id == current_user.id)
+        .where(SRCard.ease_factor < 2.0)
+        .order_by(SRCard.ease_factor.asc())
+        .limit(10)
+    )
+    weak_cards = result.scalars().all()
+    
+    weak_facts = [
+        {"a": card.factor_a, "b": card.factor_b, "error_rate": round(1.0 / card.ease_factor, 2)}
+        for card in weak_cards
+    ]
+    
+    return {
+        "weak_facts": weak_facts,
+    }
+
+
+@router.get("/daily-challenge")
+async def get_daily_challenge(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
+):
+    """Получить ежедневный вызов для режима Fighter.
+    
+    Возвращает текущий челлендж и прогресс.
+    Заглушка: возвращает случайный вызов.
+    """
+    # TODO: Реализовать генерацию ежедневных челленджей
+    return {
+        "id": 1,
+        "condition_type": "complete_reviews",
+        "target_value": 20,
+        "progress": 0,
+        "reward_xp": 100,
+    }
