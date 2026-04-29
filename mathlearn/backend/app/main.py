@@ -4,6 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.routers import auth_router, sr_router, drill_router
 from app.api.stats import router as stats_router
+from app.routers.profile import router as profile_router
+from app.routers.daily_challenge import router as daily_challenge_router
 from app.core.scheduler import start_scheduler
 
 
@@ -27,6 +29,8 @@ app.include_router(auth_router, prefix="/api")
 app.include_router(sr_router, prefix="/api")
 app.include_router(drill_router, prefix="/api")
 app.include_router(stats_router, prefix="/api")
+app.include_router(profile_router, prefix="/api")
+app.include_router(daily_challenge_router, prefix="/api")
 
 
 @app.on_event("startup")

@@ -1,7 +1,7 @@
 """Модель пользователя."""
 
 from datetime import datetime
-from sqlalchemy import Integer, String, DateTime
+from sqlalchemy import Integer, String, DateTime, Float, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
@@ -21,6 +21,9 @@ class User(Base):
     level: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
     current_streak: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     max_streak: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    learning_mode: Mapped[str] = mapped_column(String(20), default="classic", nullable=False)
+    xp_multiplier: Mapped[float] = mapped_column(Float, default=1.0, nullable=False)
+    streak_freeze_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -34,6 +37,12 @@ class User(Base):
     drill_sessions: Mapped[list["DrillSession"]] = relationship("DrillSession", back_populates="user", cascade="all, delete-orphan")
     ai_recommendations: Mapped[list["AIRecommendation"]] = relationship(
         "AIRecommendation", back_populates="user", cascade="all, delete-orphan"
+    )
+    daily_challenges: Mapped[list["DailyChallenge"]] = relationship(
+        "DailyChallenge", back_populates="user", cascade="all, delete-orphan"
+    )
+    weekly_challenge_entries: Mapped[list["WeeklyChallengeEntry"]] = relationship(
+        "WeeklyChallengeEntry", back_populates="user", cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:
